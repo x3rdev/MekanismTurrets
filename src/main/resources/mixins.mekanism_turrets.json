@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.x3r.mekanism_turrets.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "mixins.mekanism_turrets.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
