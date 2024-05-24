@@ -23,9 +23,22 @@ public class ElectricFenceBlock extends IronBarsBlock implements EntityBlock {
     public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
         pLevel.getBlockEntity(pPos, BlockEntityRegistry.ELECTRIC_FENCE.get()).ifPresent(blockEntity -> {
             blockEntity.getCapability(ForgeCapabilities.ENERGY).ifPresent(energyStorage -> {
-                energyStorage.receiveEnergy(100, false);
+                int total = energyStorage.getEnergyStored();
+                if(total > 0) {
+                    float ratio = (float) energyStorage.getEnergyStored() / energyStorage.getMaxEnergyStored();
+                    boolean b = pEntity.hurt(pEntity.damageSources().lightningBolt(), ratio * 10.0F);
+                    if(b) {
+                        energyStorage.extractEnergy((int) (energyStorage.getEnergyStored() * 0.1F), false);
+                    }
+                }
+
             });
         });
+    }
+
+    @Override
+    public void stepOn(Level pLevel, BlockPos pPos, BlockState pState, Entity pEntity) {
+        entityInside(pState, pLevel, pPos, pEntity);
     }
 
     @Nullable
