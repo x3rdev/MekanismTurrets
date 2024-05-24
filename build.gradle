@@ -69,12 +69,17 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     maven { url 'https://modmaven.dev/' }
+    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven { url 'https://www.cursemaven.com' }
 }
 
 dependencies {
 
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("mekanism:Mekanism:${mekanism_version}")
+    implementation fg.deobf("mekanism:Mekanism:${minecraft_version}-${mekanism_version}")
+    implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
+
+    runtimeOnly fg.deobf("curse.maven:jade-324717:5339264")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
