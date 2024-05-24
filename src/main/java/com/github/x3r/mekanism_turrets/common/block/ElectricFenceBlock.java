@@ -1,12 +1,13 @@
 package com.github.x3r.mekanism_turrets.common.block;
 
 import com.github.x3r.mekanism_turrets.common.block_entity.ElectricFenceBlockEntity;
-import com.github.x3r.mekanism_turrets.common.registry.BlockEntityRegistry;
+import com.github.x3r.mekanism_turrets.common.registry.BlockEntityTypeRegistry;
+import mekanism.common.block.interfaces.IHasTileEntity;
+import mekanism.common.registration.impl.TileEntityTypeRegistryObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -15,14 +16,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.Nullable;
 
-public class ElectricFenceBlock extends IronBarsBlock implements EntityBlock {
+public class ElectricFenceBlock extends IronBarsBlock implements IHasTileEntity<ElectricFenceBlockEntity> {
     public ElectricFenceBlock(Properties properties) {
         super(properties);
     }
 
     @Override
     public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
-        pLevel.getBlockEntity(pPos, BlockEntityRegistry.ELECTRIC_FENCE.get()).ifPresent(blockEntity -> {
+        pLevel.getBlockEntity(pPos, BlockEntityTypeRegistry.ELECTRIC_FENCE.get()).ifPresent(blockEntity -> {
             blockEntity.getCapability(ForgeCapabilities.ENERGY).ifPresent(energyStorage -> {
                 int total = energyStorage.getEnergyStored();
                 if(total > 0) {
@@ -42,16 +43,15 @@ public class ElectricFenceBlock extends IronBarsBlock implements EntityBlock {
         entityInside(pState, pLevel, pPos, pEntity);
     }
 
-    @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new ElectricFenceBlockEntity(pPos, pState);
+    public TileEntityTypeRegistryObject<? extends ElectricFenceBlockEntity> getTileType() {
+        return BlockEntityTypeRegistry.ELECTRIC_FENCE;
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        return pLevel.isClientSide() ? null : BaseEntityBlock.createTickerHelper(pBlockEntityType, BlockEntityRegistry.ELECTRIC_FENCE.get(), ElectricFenceBlockEntity::serverTick);
+        return pLevel.isClientSide() ? null : BaseEntityBlock.createTickerHelper(pBlockEntityType, BlockEntityTypeRegistry.ELECTRIC_FENCE.get(), ElectricFenceBlockEntity::serverTick);
     }
 
 

@@ -1,6 +1,5 @@
 package com.github.x3r.mekanism_turrets.common.block;
 
-import com.github.x3r.mekanism_turrets.common.block_entity.BasicLaserTurretBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -29,8 +28,14 @@ public class BasicLaserTurretBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new BasicLaserTurretBlockEntity(pPos, pState);
+        return null;
     }
+
+//    @Nullable
+//    @Override
+//    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
+//        return pLevel.isClientSide() ? null : BaseEntityBlock.createTickerHelper(pBlockEntityType, BlockEntityRegistry.BASIC_LASER_TURRET.get(), BasicLaserTurretBlockEntity::serverTick);
+//    }
 
     @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {

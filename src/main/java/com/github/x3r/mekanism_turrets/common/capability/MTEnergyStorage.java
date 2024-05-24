@@ -1,4 +1,4 @@
-package com.github.x3r.mekanism_turrets.common.block;
+package com.github.x3r.mekanism_turrets.common.capability;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.INBTSerializable;
