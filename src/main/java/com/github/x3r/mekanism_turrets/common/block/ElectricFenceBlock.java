@@ -1,5 +1,6 @@
 package com.github.x3r.mekanism_turrets.common.block;
 
+import com.github.x3r.mekanism_turrets.common.block_entity.ElectricFenceBlockEntity;
 import com.github.x3r.mekanism_turrets.common.registry.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
