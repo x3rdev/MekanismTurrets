@@ -1,0 +1,8 @@
+{
+  "container.mekanism_turrets.basic_laser_turret": "Basic Laser Turret",
+  "description.mekanism.laser_turret": "A laser turret that can be used to defend your base from hostile mobs.",
+  "gui.turret.target_hostile": "Target hostile mobs",
+  "gui.turret.target_passive": "Target passive mobs",
+  "gui.turret.target_players": "Target players",
+  "gui.turret.target_trusted": "Target trusted players"
+}

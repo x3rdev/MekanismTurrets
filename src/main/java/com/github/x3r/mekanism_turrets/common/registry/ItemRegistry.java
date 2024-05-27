@@ -23,7 +23,7 @@ public class ItemRegistry {
                 .title(Component.literal("itemGroup." + MekanismTurrets.MOD_ID))
                 .displayItems((displayParameters, output) -> {
                     ItemRegistry.ITEMS.getEntries().forEach(itemRegistryObject -> output.accept(itemRegistryObject.get()));
-                    BlockItemRegistry.BLOCK_ITEMS.getEntries().forEach(itemRegistryObject -> output.accept(itemRegistryObject.get()));
+                    BlockRegistry.BLOCKS.getAllBlocks().forEach(iBlockProvider -> output.accept(iBlockProvider.getItemStack()));
                 })
                 .build());
     }
