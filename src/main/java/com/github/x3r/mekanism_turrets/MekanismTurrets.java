@@ -1,10 +1,7 @@
 package com.github.x3r.mekanism_turrets;
 
 import com.github.x3r.mekanism_turrets.common.packet.MekanismTurretsPacketHandler;
-import com.github.x3r.mekanism_turrets.common.registry.BlockEntityTypeRegistry;
-import com.github.x3r.mekanism_turrets.common.registry.BlockRegistry;
-import com.github.x3r.mekanism_turrets.common.registry.ContainerTypeRegistry;
-import com.github.x3r.mekanism_turrets.common.registry.ItemRegistry;
+import com.github.x3r.mekanism_turrets.common.registry.*;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -27,6 +24,7 @@ public class MekanismTurrets {
         BlockRegistry.BLOCKS.register(modEventBus);
         BlockEntityTypeRegistry.BLOCK_ENTITY_TYPES.register(modEventBus);
         ContainerTypeRegistry.CONTAINER_TYPES.register(modEventBus);
+        EntityRegistry.ENTITY_TYPES.register(modEventBus);
         ItemRegistry.ITEMS.register(modEventBus);
         ItemRegistry.ModItemTab.CREATIVE_MODE_TABS.register(modEventBus);
 

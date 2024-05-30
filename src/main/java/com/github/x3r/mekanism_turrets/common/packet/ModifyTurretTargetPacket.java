@@ -48,6 +48,8 @@ public class ModifyTurretTargetPacket {
                     case 3 -> turret.setTargetsTrusted(value);
                     default -> throw new IllegalArgumentException("Invalid index: " + index);
                 }
+                turret.markUpdated();
+                turret.tryInvalidateTarget();
             }
         });
         context.get().setPacketHandled(true);
