@@ -1,0 +1,78 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 2,
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-6, 0, -6], "size": [12, 1, 12], "uv": [0, 0]},
+						{"origin": [-3, 1, -3], "size": [6, 1, 6], "uv": [37, 37]},
+						{"origin": [4, 1, -5], "size": [1, 1, 1], "uv": [0, 9]},
+						{"origin": [4, 1, 4], "size": [1, 1, 1], "uv": [7, 6]},
+						{"origin": [-5, 1, 4], "size": [1, 1, 1], "uv": [7, 3]},
+						{"origin": [-5, 1, -5], "size": [1, 1, 1], "uv": [7, 0]}
+					]
+				},
+				{
+					"name": "turret",
+					"parent": "root",
+					"pivot": [0, 2, 0],
+					"cubes": [
+						{"origin": [-2, 2, -2], "size": [4, 4, 4], "uv": [42, 45]},
+						{"origin": [-5, 6, -3], "size": [10, 1, 6], "uv": [21, 14]},
+						{"origin": [-5, 7, -3], "size": [1, 6, 6], "uv": [15, 45]},
+						{"origin": [4, 7, -3], "size": [1, 6, 6], "uv": [0, 40]},
+						{"origin": [-6, 9, -1], "size": [12, 2, 2], "uv": [26, 32]}
+					]
+				},
+				{
+					"name": "cannon",
+					"parent": "turret",
+					"pivot": [0, 10, 0],
+					"cubes": [
+						{"origin": [-3, 8, -4], "size": [6, 4, 8], "uv": [0, 14]},
+						{"origin": [-2, 12, -4], "size": [4, 1, 8], "uv": [21, 22]},
+						{"origin": [-2, 8, 4], "size": [4, 4, 3], "uv": [38, 22]},
+						{"origin": [-1, 9, 7], "size": [2, 2, 1], "uv": [0, 5]}
+					]
+				},
+				{
+					"name": "cannon_right",
+					"parent": "cannon",
+					"pivot": [-2, 10, -4],
+					"cubes": [
+						{"origin": [-2.5, 8, -12], "size": [2, 4, 8], "uv": [13, 32]},
+						{"origin": [-3.5, 9, -13], "size": [1, 2, 9], "uv": [25, 37]}
+					]
+				},
+				{
+					"name": "cannon_left",
+					"parent": "cannon",
+					"pivot": [2, 10, -4],
+					"cubes": [
+						{"origin": [2.5, 9, -13], "size": [1, 2, 9], "uv": [37, 0]},
+						{"origin": [0.5, 8, -12], "size": [2, 4, 8], "uv": [0, 27]}
+					]
+				},
+				{
+					"name": "recharge",
+					"parent": "cannon",
+					"pivot": [0, 12, 6],
+					"cubes": [
+						{"origin": [-1, 12, 5], "size": [2, 3, 1], "uv": [0, 0]}
+					]
+				}
+			]
+		}
+	]
+}

@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
@@ -24,6 +25,7 @@ public class LaserRenderer<T extends LaserEntity> extends EntityRenderer<T> {
 
     @Override
     public void render(T pEntity, float pEntityYaw, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight) {
+        fixRotation(pEntity);
         pPoseStack.pushPose();
         pPoseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(pPartialTick, pEntity.yRotO, pEntity.getYRot()) - 90.0F));
         pPoseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(pPartialTick, pEntity.xRotO, pEntity.getXRot())));
@@ -68,6 +70,12 @@ public class LaserRenderer<T extends LaserEntity> extends EntityRenderer<T> {
 
     public void vertex(Matrix4f pMatrix, Matrix3f pNormal, VertexConsumer pConsumer, int pX, int pY, int pZ, float pU, float pV, int pNormalX, int pNormalZ, int pNormalY, int pPackedLight) {
         pConsumer.vertex(pMatrix, pX, pY, pZ).color(255, 255, 255, 255).uv(pU, pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pPackedLight).normal(pNormal, (float)pNormalX, (float)pNormalY, (float)pNormalZ).endVertex();
+    }
+
+    private void fixRotation(T entity) {
+        Vec3 vec = entity.getDeltaMovement();
+        entity.setYRot((float) Math.atan2(vec.x, vec.z) * Mth.RAD_TO_DEG);
+        entity.setXRot((float) Math.atan2(vec.y, Math.sqrt(vec.x * vec.x + vec.z * vec.z)) * Mth.RAD_TO_DEG);
     }
 
     @Override

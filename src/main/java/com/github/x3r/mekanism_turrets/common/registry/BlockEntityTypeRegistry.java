@@ -14,4 +14,7 @@ public class BlockEntityTypeRegistry {
 
     public static final TileEntityTypeRegistryObject<ElectricFenceBlockEntity> ELECTRIC_FENCE = BLOCK_ENTITY_TYPES.register(BlockRegistry.ELECTRIC_FENCE, ElectricFenceBlockEntity::new);
     public static final TileEntityTypeRegistryObject<LaserTurretBlockEntity> BASIC_LASER_TURRET = BLOCK_ENTITY_TYPES.register(BlockRegistry.BASIC_LASER_TURRET, (pos, state) -> new LaserTurretBlockEntity(BlockRegistry.BASIC_LASER_TURRET, pos, state));
+    public static final TileEntityTypeRegistryObject<LaserTurretBlockEntity> ADVANCED_LASER_TURRET = BLOCK_ENTITY_TYPES.register(BlockRegistry.ADVANCED_LASER_TURRET, (pos, state) -> new LaserTurretBlockEntity(BlockRegistry.ADVANCED_LASER_TURRET, pos, state));
+    public static final TileEntityTypeRegistryObject<LaserTurretBlockEntity> ELITE_LASER_TURRET = BLOCK_ENTITY_TYPES.register(BlockRegistry.ELITE_LASER_TURRET, (pos, state) -> new LaserTurretBlockEntity(BlockRegistry.ELITE_LASER_TURRET, pos, state));
+    public static final TileEntityTypeRegistryObject<LaserTurretBlockEntity> ULTIMATE_LASER_TURRET = BLOCK_ENTITY_TYPES.register(BlockRegistry.ULTIMATE_LASER_TURRET, (pos, state) -> new LaserTurretBlockEntity(BlockRegistry.ULTIMATE_LASER_TURRET, pos, state));
 }

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "mekanism_turrets:block/elite_laser_turret"
+    }
+  }
+}

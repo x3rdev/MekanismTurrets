@@ -25,6 +25,9 @@ public class ClientSetup {
     @SubscribeEvent
     public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(BlockEntityTypeRegistry.BASIC_LASER_TURRET.get(), pContext -> new LaserTurretRenderer());
+        event.registerBlockEntityRenderer(BlockEntityTypeRegistry.ADVANCED_LASER_TURRET.get(), pContext -> new LaserTurretRenderer());
+        event.registerBlockEntityRenderer(BlockEntityTypeRegistry.ELITE_LASER_TURRET.get(), pContext -> new LaserTurretRenderer());
+        event.registerBlockEntityRenderer(BlockEntityTypeRegistry.ULTIMATE_LASER_TURRET.get(), pContext -> new LaserTurretRenderer());
         event.registerEntityRenderer(EntityRegistry.LASER.get(), LaserRenderer::new);
     }
 

@@ -1,11 +1,16 @@
 package com.github.x3r.mekanism_turrets.common.block_entity;
 
 import com.github.x3r.mekanism_turrets.MekanismTurrets;
-import mekanism.api.IContentsListener;
-import mekanism.api.RelativeSide;
+import com.github.x3r.mekanism_turrets.common.entity.LaserEntity;
+import com.github.x3r.mekanism_turrets.common.scheduler.Scheduler;
+import mekanism.api.*;
+import mekanism.api.math.FloatingLong;
+import mekanism.api.math.FloatingLongSupplier;
 import mekanism.api.providers.IBlockProvider;
 import mekanism.common.block.attribute.Attribute;
+import mekanism.common.capabilities.energy.BasicEnergyContainer;
 import mekanism.common.capabilities.energy.MachineEnergyContainer;
+import mekanism.common.capabilities.energy.VariableCapacityEnergyContainer;
 import mekanism.common.capabilities.holder.energy.EnergyContainerHelper;
 import mekanism.common.capabilities.holder.energy.IEnergyContainerHolder;
 import mekanism.common.capabilities.holder.slot.IInventorySlotHolder;
@@ -16,21 +21,28 @@ import mekanism.common.inventory.slot.EnergyInventorySlot;
 import mekanism.common.lib.frequency.FrequencyType;
 import mekanism.common.lib.security.SecurityFrequency;
 import mekanism.common.tile.base.TileEntityMekanism;
+import mekanism.common.upgrade.IUpgradeData;
 import mekanism.common.util.NBTUtils;
 import mekanism.common.util.SecurityUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.Animation;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.network.SerializableDataTicket;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -48,7 +60,8 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     public static final SerializableDataTicket<Double> TARGET_POS_X = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_x")));
     public static final SerializableDataTicket<Double> TARGET_POS_Y = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_y")));
     public static final SerializableDataTicket<Double> TARGET_POS_Z = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_z")));
-    private static final float MAX_RANGE = 10;
+    private static final RawAnimation SHOOT_ANIMATION = RawAnimation.begin().then("shoot", Animation.LoopType.PLAY_ONCE);
+    private static final float MAX_RANGE = 20;
     private final AABB targetBox = AABB.ofSize(getBlockPos().getCenter(), MAX_RANGE, MAX_RANGE, MAX_RANGE);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private LaserTurretTier tier;
@@ -58,7 +71,9 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     private boolean targetsPlayers = false;
     private boolean targetsTrusted = true;
     private @Nullable LivingEntity target;
-
+    public float xRot0 = 0;
+    public float yRot0 = 0;
+    private int coolDown = 0;
 
     public LaserTurretBlockEntity(IBlockProvider blockProvider, BlockPos pos, BlockState state) {
         super(blockProvider, pos, state);
@@ -80,6 +95,10 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         InventorySlotHelper builder = InventorySlotHelper.forSide(this::getDirection);
         builder.addSlot(energySlot = EnergyInventorySlot.fillOrConvert(energyContainer, this::getLevel, listener, 143, 35), RelativeSide.BACK);
         return builder.build();
+    }
+
+    public LaserTurretTier getTier() {
+        return tier;
     }
 
     public boolean targetsHostile() {
@@ -119,17 +138,44 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         tryInvalidateTarget();
         tryFindTarget();
         if(target != null) {
-//            setAnimData(TARGET_POS_X, target.getX());
-//            setAnimData(TARGET_POS_Y, target.getY());
-//            setAnimData(TARGET_POS_Z, target.getZ());
+            setAnimData(TARGET_POS_X, target.getX());
+            setAnimData(TARGET_POS_Y, target.getY());
+            setAnimData(TARGET_POS_Z, target.getZ());
+            if(coolDown==0) {
+                coolDown = Math.round(tier.getCooldown()/(1F+upgradeComponent.getUpgrades(Upgrade.SPEED)));
+                if(energyContainer.getEnergy().greaterOrEqual(FloatingLong.create(laserShotEnergy()))) {
+                    shootLaser();
+                    if(tier.equals(LaserTurretTier.ULTIMATE)) {
+                        Scheduler.schedule(this::shootLaser, 10);
+                    }
+                }
+            } else {
+                coolDown--;
+            }
         }
-        setAnimData(HAS_TARGET, true);
+    }
+
+    private void shootLaser() {
+        if(target != null) {
+            triggerAnim("controller", "shoot");
+            Vec3 center = getBlockPos().getCenter();
+            Vec3 lookVec = center.vectorTo(target.position().add(0, 1.25, 0)).normalize();
+            Vec3 pos = center.add(lookVec.scale(0.75F));
+            LaserEntity laser = new LaserEntity(level, pos.add(0, -0.25, 0), tier.getDamage());
+            laser.setDeltaMovement(lookVec.scale(1.25F));
+            level.addFreshEntity(laser);
+            energyContainer.extract(FloatingLong.create(laserShotEnergy()), Action.EXECUTE, AutomationType.INTERNAL);
+        }
+    }
+
+    private int laserShotEnergy() {
+        return 1000*Mth.square((upgradeComponent.getUpgrades(Upgrade.SPEED)+1)*(tier.ordinal()+1));
     }
 
     public void tryInvalidateTarget() {
-        if(target != null && !target.isAlive() && target.distanceToSqr(this.getBlockPos().getCenter()) > MAX_RANGE*MAX_RANGE) {
-            target = null;
+        if(target != null && (!target.isAlive() || target.distanceToSqr(this.getBlockPos().getCenter()) > MAX_RANGE*MAX_RANGE)) {
             setAnimData(HAS_TARGET, false);
+            target = null;
         }
     }
 
@@ -151,10 +197,10 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         if(!e.canBeSeenAsEnemy()) {
             return false;
         }
-        if(this.targetsHostile && e.canAttackType(EntityType.PLAYER)) {
+        if(this.targetsHostile && e.getType().getCategory().equals(MobCategory.MONSTER)) {
             return true;
         }
-        if(this.targetsPassive && !(e instanceof Player)) {
+        if(this.targetsPassive && !e.getType().getCategory().equals(MobCategory.MONSTER)) {
             return true;
         }
         UUID owner = SecurityUtils.get().getOwnerUUID(this);
@@ -170,6 +216,25 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     @Override
+    public void parseUpgradeData(@NotNull IUpgradeData data) {
+        if(data instanceof LaserTurretUpgradeData) {
+            LaserTurretUpgradeData upgradeData = (LaserTurretUpgradeData) data;
+            this.targetsHostile = upgradeData.targetsHostile();
+            this.targetsPassive = upgradeData.targetsPassive();
+            this.targetsPlayers = upgradeData.targetsPlayers();
+            this.targetsTrusted = upgradeData.targetsTrusted();
+//            this.energyContainer.setMaxEnergy(FloatingLong.create(10000L * Mth.square(tier.ordinal()+1)));
+        } else {
+            super.parseUpgradeData(data);
+        }
+    }
+
+    @Override
+    public @Nullable IUpgradeData getUpgradeData() {
+        return new LaserTurretUpgradeData(targetsHostile, targetsPassive, targetsPlayers, targetsTrusted);
+    }
+
+    @Override
     public void onLoad() {
         super.onLoad();
         markUpdated();
@@ -178,19 +243,13 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     @Override
     public void saveAdditional(@NotNull CompoundTag nbtTags) {
         super.saveAdditional(nbtTags);
-        nbtTags.putBoolean("targetsHostile", targetsHostile);
-        nbtTags.putBoolean("targetsPassive", targetsPassive);
-        nbtTags.putBoolean("targetsPlayers", targetsPlayers);
-        nbtTags.putBoolean("targetsTrusted", targetsTrusted);
+        getReducedUpdateTag();
     }
 
     @Override
     public void load(@NotNull CompoundTag nbt) {
         super.load(nbt);
-        NBTUtils.setBooleanIfPresent(nbt, "targetsHostile", value -> targetsHostile = value);
-        NBTUtils.setBooleanIfPresent(nbt, "targetsPassive", value -> targetsPassive = value);
-        NBTUtils.setBooleanIfPresent(nbt, "targetsPlayers", value -> targetsPlayers = value);
-        NBTUtils.setBooleanIfPresent(nbt, "targetsTrusted", value -> targetsTrusted = value);
+        handleUpdateTag(nbt);
     }
 
     @Override
@@ -226,7 +285,8 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-
+        controllers.add(new AnimationController<>(this, "controller", 0, state -> PlayState.CONTINUE)
+                .triggerableAnim("shoot", SHOOT_ANIMATION));
     }
 
     @Override

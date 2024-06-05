@@ -27,6 +27,9 @@ public class BlockRegistry {
             () -> new ElectricFenceBlock(BlockBehaviour.Properties.of().requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.METAL).noOcclusion()));
 
     public static final BlockRegistryObject<LaserTurretBlock, LaserTurretBlockItem> BASIC_LASER_TURRET = registerLaserTurret(BlockTypeRegistry.BASIC_LASER_TURRET);
+    public static final BlockRegistryObject<LaserTurretBlock, LaserTurretBlockItem> ADVANCED_LASER_TURRET = registerLaserTurret(BlockTypeRegistry.ADVANCED_LASER_TURRET);
+    public static final BlockRegistryObject<LaserTurretBlock, LaserTurretBlockItem> ELITE_LASER_TURRET = registerLaserTurret(BlockTypeRegistry.ELITE_LASER_TURRET);
+    public static final BlockRegistryObject<LaserTurretBlock, LaserTurretBlockItem> ULTIMATE_LASER_TURRET = registerLaserTurret(BlockTypeRegistry.ULTIMATE_LASER_TURRET);
 
     private static BlockRegistryObject<LaserTurretBlock, LaserTurretBlockItem> registerLaserTurret(BlockTypeTile<LaserTurretBlockEntity> type) {
         return registerTieredBlock(type, "_laser_turret", () -> new LaserTurretBlock(type), LaserTurretBlockItem::new);

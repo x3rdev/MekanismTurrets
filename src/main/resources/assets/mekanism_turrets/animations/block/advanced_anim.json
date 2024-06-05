@@ -1,0 +1,36 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"shoot": {
+			"animation_length": 0.25,
+			"bones": {
+				"root": {
+					"position": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"turret": {
+					"position": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"cannon": {
+					"position": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"long_cannon": {
+					"position": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.25": {
+							"vector": [0, 0, 1]
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}
