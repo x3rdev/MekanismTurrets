@@ -1,20 +1,16 @@
 package com.github.x3r.mekanism_turrets.common.registry;
 
-import com.github.x3r.mekanism_turrets.MekanismTurretsConfig;
 import com.github.x3r.mekanism_turrets.common.block.LaserTurretBlock;
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretBlockEntity;
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretTier;
 import com.github.x3r.mekanism_turrets.common.lang.MekanismTurretsLang;
 import mekanism.api.Upgrade;
 import mekanism.api.math.FloatingLong;
-import mekanism.api.math.FloatingLongSupplier;
 import mekanism.common.block.attribute.*;
-import mekanism.common.config.MekanismConfig;
 import mekanism.common.content.blocktype.BlockTypeTile;
 import mekanism.common.registration.impl.BlockRegistryObject;
 import mekanism.common.registration.impl.TileEntityTypeRegistryObject;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.function.Supplier;

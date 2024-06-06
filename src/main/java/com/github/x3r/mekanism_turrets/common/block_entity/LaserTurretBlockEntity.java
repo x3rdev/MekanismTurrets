@@ -32,10 +32,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
@@ -49,6 +52,7 @@ import software.bernie.geckolib.network.SerializableDataTicket;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -76,6 +80,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     public float xRot0 = 0;
     public float yRot0 = 0;
     private int coolDown = 0;
+    private Vec3 lookVec = Vec3.ZERO;
 
     public LaserTurretBlockEntity(IBlockProvider blockProvider, BlockPos pos, BlockState state) {
         super(blockProvider, pos, state);
@@ -162,9 +167,8 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             triggerAnim("controller", "shoot");
             float mobHeight = target.getBbHeight();
             Vec3 center = getBlockPos().getCenter();
-            Vec3 lookVec = center.vectorTo(target.position().add(0, mobHeight/2, 0)).normalize();
-            Vec3 pos = center.add(lookVec.scale(0.75F));
-            LaserEntity laser = new LaserEntity(level, pos.add(0, -mobHeight/4, 0), tier.getDamage());
+            Vec3 lookVec = center.vectorTo(target.position().add(0, mobHeight/2, 0)).normalize().scale(0.75F);
+            LaserEntity laser = new LaserEntity(level, center.add(lookVec), tier.getDamage());
             laser.setDeltaMovement(lookVec.scale(1.25F));
             level.addFreshEntity(laser);
             energyContainer.extract(FloatingLong.create(laserShotEnergy()), Action.EXECUTE, AutomationType.INTERNAL);
@@ -176,7 +180,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     public void tryInvalidateTarget() {
-        if(target != null && isValidTarget(target)) {
+        if(target != null && !isValidTarget(target)) {
             setAnimData(HAS_TARGET, false);
             target = null;
         }
@@ -205,6 +209,9 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         if(MekanismTurretsConfig.blacklistedEntities.get().stream().map(s -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(s))).anyMatch(entityType -> e.getType().equals(entityType))) {
             return false;
         }
+        if(!canSeeTarget(e)) {
+            return false;
+        }
         if(this.targetsHostile && e.getType().getCategory().equals(MobCategory.MONSTER)) {
             return true;
         }
@@ -221,6 +228,15 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             return targetsTrusted || !playerTrusted;
         }
         return false;
+    }
+
+    private boolean canSeeTarget(LivingEntity e) {
+        float mobHeight = e.getBbHeight();
+        Vec3 center = getBlockPos().getCenter();
+        Vec3 targetCenter = e.position().add(0, mobHeight/2, 0);
+        Vec3 lookVec = center.vectorTo(targetCenter).normalize().scale(0.75F);
+        ClipContext ctx = new ClipContext(center.add(lookVec), targetCenter, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null);
+        return level.clip(ctx).getType().equals(HitResult.Type.MISS);
     }
 
     @Override
