@@ -1,6 +1,7 @@
 package com.github.x3r.mekanism_turrets.common.block_entity;
 
 import com.github.x3r.mekanism_turrets.MekanismTurrets;
+import com.github.x3r.mekanism_turrets.MekanismTurretsConfig;
 import com.github.x3r.mekanism_turrets.common.entity.LaserEntity;
 import com.github.x3r.mekanism_turrets.common.scheduler.Scheduler;
 import mekanism.api.*;
@@ -34,6 +35,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
@@ -158,10 +160,11 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     private void shootLaser() {
         if(target != null) {
             triggerAnim("controller", "shoot");
+            float mobHeight = target.getBbHeight();
             Vec3 center = getBlockPos().getCenter();
-            Vec3 lookVec = center.vectorTo(target.position().add(0, 1.25, 0)).normalize();
+            Vec3 lookVec = center.vectorTo(target.position().add(0, mobHeight/2, 0)).normalize();
             Vec3 pos = center.add(lookVec.scale(0.75F));
-            LaserEntity laser = new LaserEntity(level, pos.add(0, -0.25, 0), tier.getDamage());
+            LaserEntity laser = new LaserEntity(level, pos.add(0, -mobHeight/4, 0), tier.getDamage());
             laser.setDeltaMovement(lookVec.scale(1.25F));
             level.addFreshEntity(laser);
             energyContainer.extract(FloatingLong.create(laserShotEnergy()), Action.EXECUTE, AutomationType.INTERNAL);
@@ -173,7 +176,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     public void tryInvalidateTarget() {
-        if(target != null && (!target.isAlive() || target.distanceToSqr(this.getBlockPos().getCenter()) > MAX_RANGE*MAX_RANGE)) {
+        if(target != null && isValidTarget(target)) {
             setAnimData(HAS_TARGET, false);
             target = null;
         }
@@ -183,7 +186,6 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         if(target == null) {
             List<LivingEntity> livingEntityList = level.getEntities(null, targetBox).stream().filter(LivingEntity.class::isInstance).map(LivingEntity.class::cast).toList();
             Optional<LivingEntity> optional = livingEntityList.stream()
-                    .filter(e -> e.distanceToSqr(this.getBlockPos().getCenter()) <= MAX_RANGE*MAX_RANGE)
                     .sorted((o1, o2) -> Double.compare(o1.distanceToSqr(this.getBlockPos().getCenter()), o2.distanceToSqr(this.getBlockPos().getCenter())))
                     .filter(this::isValidTarget).findFirst();
             optional.ifPresent(livingEntity -> {
@@ -195,6 +197,12 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
 
     private boolean isValidTarget(LivingEntity e) {
         if(!e.canBeSeenAsEnemy()) {
+            return false;
+        }
+        if(e.distanceToSqr(this.getBlockPos().getCenter()) > MAX_RANGE*MAX_RANGE) {
+            return false;
+        }
+        if(MekanismTurretsConfig.blacklistedEntities.get().stream().map(s -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(s))).anyMatch(entityType -> e.getType().equals(entityType))) {
             return false;
         }
         if(this.targetsHostile && e.getType().getCategory().equals(MobCategory.MONSTER)) {
@@ -223,7 +231,6 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             this.targetsPassive = upgradeData.targetsPassive();
             this.targetsPlayers = upgradeData.targetsPlayers();
             this.targetsTrusted = upgradeData.targetsTrusted();
-//            this.energyContainer.setMaxEnergy(FloatingLong.create(10000L * Mth.square(tier.ordinal()+1)));
         } else {
             super.parseUpgradeData(data);
         }
