@@ -27,16 +27,15 @@ public class ElectricFenceBlockEntity extends TileEntityMekanism {
     public static void serverTick(Level pLevel, BlockPos pPos, BlockState pState, ElectricFenceBlockEntity blockEntity) {
         for (Direction dir : Direction.values()) {
             blockEntity.getCapability(ForgeCapabilities.ENERGY).ifPresent(ownStorage -> {
-                if(ownStorage.getEnergyStored() == ownStorage.getMaxEnergyStored()) {
-                    Optional<ElectricFenceBlockEntity> otherBlockEntity = pLevel.getBlockEntity(pPos.relative(dir), BlockEntityTypeRegistry.ELECTRIC_FENCE.get());
-                    otherBlockEntity.ifPresent(electricFenceBlockEntity -> electricFenceBlockEntity.getCapability(ForgeCapabilities.ENERGY, dir.getOpposite()).ifPresent(otherStorage -> {
-                        if(otherStorage.getEnergyStored() < otherStorage.getMaxEnergyStored()) {
-                            int a = ownStorage.extractEnergy(750, true);
-                            int b = otherStorage.receiveEnergy(750, false);
-                            ownStorage.extractEnergy(otherStorage.receiveEnergy(Math.min(a, b), false), false);
-                        }
-                    }));
-                }
+                Optional<ElectricFenceBlockEntity> otherBlockEntity = pLevel.getBlockEntity(pPos.relative(dir), BlockEntityTypeRegistry.ELECTRIC_FENCE.get());
+                otherBlockEntity.ifPresent(electricFenceBlockEntity -> electricFenceBlockEntity.getCapability(ForgeCapabilities.ENERGY, dir.getOpposite()).ifPresent(otherStorage -> {
+                    if(ownStorage.getEnergyStored() > otherStorage.getEnergyStored() &&
+                            otherStorage.getEnergyStored() < otherStorage.getMaxEnergyStored()) {
+                        int a = ownStorage.extractEnergy(750, true);
+                        int b = otherStorage.receiveEnergy(750, true);
+                        ownStorage.extractEnergy(otherStorage.receiveEnergy(Math.min(a, b), false), false);
+                    }
+                }));
             });
         }
         blockEntity.markUpdated();

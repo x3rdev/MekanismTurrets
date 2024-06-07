@@ -1,0 +1,5 @@
+{
+  "turret_shoot": {
+    "sounds":["mekanism_turrets:turret_shoot"]
+  }
+}
