@@ -14,13 +14,13 @@ import net.minecraft.world.phys.Vec3;
 public class LaserEntity extends Projectile {
 
     private int lifeTime = 0;
-    private float damage = 1.0F;
+    private double damage = 1.0F;
     public LaserEntity(EntityType<? extends Projectile> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.noPhysics = true;
     }
 
-    public LaserEntity(Level pLevel, Vec3 pos, float damage) {
+    public LaserEntity(Level pLevel, Vec3 pos, double damage) {
         this(EntityRegistry.LASER.get(), pLevel);
         this.setPos(pos);
         this.damage = damage;
@@ -48,7 +48,7 @@ public class LaserEntity extends Projectile {
     protected void onHitEntity(EntityHitResult pResult) {
         super.onHitEntity(pResult);
         if(!level().isClientSide()) {
-            pResult.getEntity().hurt(new DamageTypeRegistry(level().registryAccess()).laser(), this.damage);
+            pResult.getEntity().hurt(new DamageTypeRegistry(level().registryAccess()).laser(), (float) this.damage);
         }
     }
 
