@@ -1,15 +1,28 @@
 package com.github.x3r.mekanism_turrets.common.block_entity;
 
+import com.github.x3r.mekanism_turrets.MekanismTurretsConfig;
 import mekanism.api.tier.BaseTier;
 import mekanism.api.tier.ITier;
 import mekanism.common.config.value.CachedFloatValue;
 import mekanism.common.config.value.CachedIntValue;
 
 public enum LaserTurretTier implements ITier {
-    BASIC(BaseTier.BASIC, 80, 1, 10000),
-    ADVANCED(BaseTier.ADVANCED, 65, 2, 40000),
-    ELITE(BaseTier.ELITE, 50, 3, 90000),
-    ULTIMATE(BaseTier.ULTIMATE, 35, 4, 160000);
+    BASIC(BaseTier.BASIC,
+            MekanismTurretsConfig.basicLaserTurretCooldown.get(),
+            MekanismTurretsConfig.basicLaserTurretDamage.get(),
+            MekanismTurretsConfig.basicLaserTurretEnergyCapacity.get()),
+    ADVANCED(BaseTier.ADVANCED,
+            MekanismTurretsConfig.advancedLaserTurretCooldown.get(),
+            MekanismTurretsConfig.advancedLaserTurretDamage.get(),
+            MekanismTurretsConfig.advancedLaserTurretEnergyCapacity.get()),
+    ELITE(BaseTier.ELITE,
+            MekanismTurretsConfig.eliteLaserTurretCooldown.get(),
+            MekanismTurretsConfig.eliteLaserTurretDamage.get(),
+            MekanismTurretsConfig.eliteLaserTurretEnergyCapacity.get()),
+    ULTIMATE(BaseTier.ULTIMATE,
+            MekanismTurretsConfig.ultimateLaserTurretCooldown.get(),
+            MekanismTurretsConfig.ultimateLaserTurretDamage.get(),
+            MekanismTurretsConfig.ultimateLaserTurretEnergyCapacity.get());
 
     private final BaseTier baseTier;
     private final int cooldown;
