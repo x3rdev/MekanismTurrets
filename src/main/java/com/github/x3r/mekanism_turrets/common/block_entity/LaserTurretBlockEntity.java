@@ -80,7 +80,6 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     public float xRot0 = 0;
     public float yRot0 = 0;
     private int coolDown = 0;
-    private Vec3 lookVec = Vec3.ZERO;
 
     public LaserTurretBlockEntity(IBlockProvider blockProvider, BlockPos pos, BlockState state) {
         super(blockProvider, pos, state);
@@ -148,8 +147,8 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             setAnimData(TARGET_POS_X, target.getX());
             setAnimData(TARGET_POS_Y, target.getY());
             setAnimData(TARGET_POS_Z, target.getZ());
-            if(coolDown==0) {
-                coolDown = Math.round(tier.getCooldown()/(1F+upgradeComponent.getUpgrades(Upgrade.SPEED)));
+            if(coolDown == 0) {
+                coolDown = Math.max(0, tier.getCooldown()-upgradeComponent.getUpgrades(Upgrade.SPEED));
                 if(energyContainer.getEnergy().greaterOrEqual(FloatingLong.create(laserShotEnergy()))) {
                     shootLaser();
                     if(tier.equals(LaserTurretTier.ULTIMATE)) {
@@ -169,7 +168,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             Vec3 center = getBlockPos().getCenter();
             Vec3 lookVec = center.vectorTo(target.position().add(0, mobHeight/2, 0)).normalize().scale(0.75F);
             LaserEntity laser = new LaserEntity(level, center.add(lookVec), tier.getDamage());
-            laser.setDeltaMovement(lookVec.scale(1.25F));
+            laser.setDeltaMovement(lookVec.scale(2.25F));
             level.addFreshEntity(laser);
             energyContainer.extract(FloatingLong.create(laserShotEnergy()), Action.EXECUTE, AutomationType.INTERNAL);
         }
@@ -223,9 +222,10 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             if(player.getUUID().equals(owner)) {
                 return false;
             }
-            SecurityFrequency frequency = FrequencyType.SECURITY.getManager(null).getFrequency(owner);
-            boolean playerTrusted = frequency.getTrustedUUIDs().contains(player.getUUID());
-            return targetsTrusted || !playerTrusted;
+            if(!targetsTrusted) {
+                SecurityFrequency frequency = FrequencyType.SECURITY.getManager(null).getFrequency(owner);
+                return frequency != null && !frequency.getTrustedUUIDs().contains(player.getUUID());
+            }
         }
         return false;
     }
