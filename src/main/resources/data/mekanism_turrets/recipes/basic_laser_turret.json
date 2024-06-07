@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    "BOK",
+    "RTR"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:redstone"
+    },
+    "B": {
+      "item": "mekanism:basic_control_circuit"
+    },
+    "O": {
+      "item": "mekanism:steel_casing"
+    },
+    "K": {
+      "item": "mekanism:electric_bow"
+    },
+    "R": {
+      "tag": "forge:ingots/steel"
+    },
+    "T": {
+      "item": "mekanism:energy_tablet"
+    }
+  },
+  "result": {
+    "item": "mekanism_turrets:basic_laser_turret",
+    "count": 1
+  }
+}

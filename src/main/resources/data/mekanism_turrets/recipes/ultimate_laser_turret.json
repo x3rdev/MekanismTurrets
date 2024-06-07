@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    "BOB",
+    "RTR"
+  ],
+  "key": {
+    "#": {
+      "item": "mekanism:alloy_atomic"
+    },
+    "B": {
+      "item": "mekanism:ultimate_control_circuit"
+    },
+    "O": {
+      "item": "mekanism_turrets:elite_laser_turret"
+    },
+    "R": {
+      "tag": "forge:ingots/steel"
+    },
+    "T": {
+      "item": "mekanism:energy_tablet"
+    }
+  },
+  "result": {
+    "item": "mekanism_turrets:ultimate_laser_turret",
+    "count": 1
+  }
+}
