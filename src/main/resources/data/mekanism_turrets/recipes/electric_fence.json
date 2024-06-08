@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "BOB",
+    "ROR"
+  ],
+  "key": {
+    "B": {
+      "item": "mekanism:alloy_infused"
+    },
+    "O": {
+      "item": "minecraft:iron_bars"
+    },
+    "R": {
+      "tag": "forge:ingots/steel"
+    }
+  },
+  "result": {
+    "item": "mekanism_turrets:electric_fence",
+    "count": 1
+  }
+}

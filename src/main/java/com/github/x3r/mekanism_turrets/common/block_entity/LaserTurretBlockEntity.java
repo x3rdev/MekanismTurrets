@@ -145,7 +145,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             setAnimData(TARGET_POS_Y, target.getY());
             setAnimData(TARGET_POS_Z, target.getZ());
             if(coolDown == 0) {
-                coolDown = Math.max(0, tier.getCooldown()-upgradeComponent.getUpgrades(Upgrade.SPEED));
+                coolDown = Math.max(0, tier.getCooldown()-(2*upgradeComponent.getUpgrades(Upgrade.SPEED)));
                 if(energyContainer.getEnergy().greaterOrEqual(FloatingLong.create(laserShotEnergy()))) {
                     shootLaser();
                     if(tier.equals(LaserTurretTier.ULTIMATE)) {
