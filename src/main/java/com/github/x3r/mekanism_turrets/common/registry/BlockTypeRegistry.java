@@ -29,7 +29,7 @@ public class BlockTypeRegistry {
                 .without(AttributeParticleFX.class, AttributeStateFacing.class, Attributes.AttributeRedstone.class)
                 .withEnergyConfig(
                         () -> FloatingLong.create(tier.getEnergyCapacity()))
-                .withSupportedUpgrades(EnumSet.of(Upgrade.SPEED, Upgrade.ENERGY))
+                .withSupportedUpgrades(EnumSet.of(Upgrade.SPEED, Upgrade.ENERGY, Upgrade.MUFFLING))
                 .withComputerSupport(tier, "LaserTurret")
                 .build();
     }

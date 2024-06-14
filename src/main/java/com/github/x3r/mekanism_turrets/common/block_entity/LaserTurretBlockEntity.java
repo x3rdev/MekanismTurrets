@@ -123,9 +123,11 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     public boolean targetsPlayers() {
         return targetsPlayers;
     }
+
     public boolean targetsTrusted() {
         return targetsTrusted;
     }
+
     public void setTargetsTrusted(boolean targetsTrusted) {
         this.targetsTrusted = targetsTrusted;
     }
@@ -160,8 +162,12 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
 
     private void shootLaser() {
         if(target != null) {
-            level.playSound(null, getBlockPos(), SoundRegistry.TURRET_SHOOT.get(), SoundSource.BLOCKS);
+            int mufflerCount = getComponent().getUpgrades(Upgrade.MUFFLING);
+            float volume = 1.0F - (mufflerCount / (float) Upgrade.MUFFLING.getMax());
+            level.playSound(null, getBlockPos(), SoundRegistry.TURRET_SHOOT.get(), SoundSource.BLOCKS, volume, 1.0F);
+
             triggerAnim("controller", "shoot");
+
             float mobHeight = target.getBbHeight();
             Vec3 center = getBlockPos().getCenter();
             Vec3 lookVec = center.vectorTo(target.position().add(0, mobHeight/2, 0)).normalize().scale(0.75F);
