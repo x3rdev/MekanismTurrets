@@ -24,6 +24,7 @@ import mekanism.common.upgrade.IUpgradeData;
 import mekanism.common.util.NBTUtils;
 import mekanism.common.util.SecurityUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
@@ -86,6 +87,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     protected @Nullable IEnergyContainerHolder getInitialEnergyContainers(IContentsListener listener) {
         EnergyContainerHelper builder = EnergyContainerHelper.forSide(this::getDirection);
         builder.addContainer(energyContainer = MachineEnergyContainer.input(this, listener));
+
         return builder.build();
     }
 
@@ -142,6 +144,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         energySlot.fillContainerOrConvert();
         tryInvalidateTarget();
         tryFindTarget();
+        energyContainer.setEnergyPerTick(FloatingLong.create(laserShotEnergy()));
         if(target != null) {
             setAnimData(TARGET_POS_X, target.getX());
             setAnimData(TARGET_POS_Y, target.getY());
@@ -179,7 +182,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     private int laserShotEnergy() {
-        return 1000*Mth.square((upgradeComponent.getUpgrades(Upgrade.SPEED)+1)*(tier.ordinal()+1));
+        return 1000*(tier.ordinal()+1)*Mth.square(upgradeComponent.getUpgrades(Upgrade.SPEED)+1);
     }
 
     public void tryInvalidateTarget() {

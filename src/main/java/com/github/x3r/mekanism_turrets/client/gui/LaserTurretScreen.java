@@ -4,13 +4,17 @@ import com.github.x3r.mekanism_turrets.MekanismTurrets;
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretBlockEntity;
 import com.github.x3r.mekanism_turrets.common.packet.MekanismTurretsPacketHandler;
 import com.github.x3r.mekanism_turrets.common.packet.ModifyTurretTargetPacket;
+import mekanism.api.math.FloatingLong;
 import mekanism.client.gui.GuiMekanismTile;
 import mekanism.client.gui.element.bar.GuiVerticalPowerBar;
 import mekanism.client.gui.element.button.ToggleButton;
 import mekanism.client.gui.element.tab.GuiEnergyTab;
+import mekanism.common.MekanismLang;
 import mekanism.common.capabilities.energy.MachineEnergyContainer;
+import mekanism.common.config.MekanismConfig;
 import mekanism.common.inventory.container.tile.MekanismTileContainer;
 import mekanism.common.inventory.warning.WarningTracker;
+import mekanism.common.util.text.EnergyDisplay;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -45,7 +49,11 @@ public class LaserTurretScreen extends GuiMekanismTile<LaserTurretBlockEntity, M
                     MachineEnergyContainer<LaserTurretBlockEntity> energyContainer = tile.getEnergyContainer();
                     return energyContainer.getEnergyPerTick().greaterThan(energyContainer.getEnergy());
                 });
-        addRenderableWidget(new GuiEnergyTab(this, tile.getEnergyContainer(), tile::getActive));
+        FloatingLong energyPerTick = tile.getEnergyContainer().getEnergyPerTick();
+        addRenderableWidget(new GuiEnergyTab(this, () -> List.of(
+                Component.translatable("gui.turret.energy_per_shot").append(EnergyDisplay.of(energyPerTick).getTextComponent()),
+                MekanismLang.NEEDED.translate(EnergyDisplay.of(energyPerTick.subtract(tile.getEnergyContainer().getEnergy())))
+        )));
         int i = 25;
         addRenderableWidget(new ToggleButton(this, 40, 33, 20, 20, TARGET_HOSTILE_OFF, TARGET_HOSTILE_ON, tile::targetsHostile,
                 () -> MekanismTurretsPacketHandler.sendToServer(new ModifyTurretTargetPacket(tile.getBlockPos(), (byte) 0, !tile.targetsHostile())),
