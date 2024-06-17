@@ -24,7 +24,6 @@ import mekanism.common.upgrade.IUpgradeData;
 import mekanism.common.util.NBTUtils;
 import mekanism.common.util.SecurityUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
@@ -215,9 +214,16 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         if(MekanismTurretsConfig.blacklistedEntities.get().stream().map(s -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(s))).anyMatch(entityType -> e.getType().equals(entityType))) {
             return false;
         }
+        if(!turretFlagsAllowTargeting(e)) {
+            return false;
+        }
         if(!canSeeTarget(e)) {
             return false;
         }
+        return true;
+    }
+
+    private boolean turretFlagsAllowTargeting(LivingEntity e) {
         if(this.targetsHostile && e.getType().getCategory().equals(MobCategory.MONSTER)) {
             return true;
         }
@@ -226,12 +232,22 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         }
         UUID owner = SecurityUtils.get().getOwnerUUID(this);
         if(this.targetsPlayers && e instanceof Player player) {
-            if(player.getUUID().equals(owner)) {
-                return false;
-            }
-            if(!targetsTrusted) {
-                SecurityFrequency frequency = FrequencyType.SECURITY.getManager(null).getFrequency(owner);
-                return frequency != null && !frequency.getTrustedUUIDs().contains(player.getUUID());
+            boolean isOwner = player.getUUID().equals(owner);
+            if(!isOwner) {
+                if(!this.targetsTrusted) {
+                    // return false if player IS TRUSTED
+                    SecurityFrequency frequency = FrequencyType.SECURITY.getManager(null).getFrequency(owner);
+                    if(frequency == null) {
+                        // if frequency is null, the owner has not "trusted" any players, return true
+                        return true;
+                    }
+                    if(!frequency.getTrustedUUIDs().contains(player.getUUID())) {
+                        // if trusted uuid list does not contain potential target uuid, return true
+                        return true;
+                    }
+                }
+                // turret doesn't care about which players it targets, return true
+                return true;
             }
         }
         return false;
