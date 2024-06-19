@@ -5,7 +5,6 @@ import com.github.x3r.mekanism_turrets.MekanismTurretsConfig;
 import com.github.x3r.mekanism_turrets.common.entity.LaserEntity;
 import com.github.x3r.mekanism_turrets.common.registry.SoundRegistry;
 import com.github.x3r.mekanism_turrets.common.scheduler.Scheduler;
-import jdk.jfr.Category;
 import mekanism.api.*;
 import mekanism.api.math.FloatingLong;
 import mekanism.api.providers.IBlockProvider;
@@ -29,7 +28,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Player;
@@ -290,25 +288,31 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag nbtTags) {
-        super.saveAdditional(nbtTags);
-        getReducedUpdateTag();
+    public void saveAdditional(@NotNull CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.putBoolean("targetsHostile", targetsHostile);
+        tag.putBoolean("targetsPassive", targetsPassive);
+        tag.putBoolean("targetsPlayers", targetsPlayers);
+        tag.putBoolean("targetsTrusted", targetsTrusted);
     }
 
     @Override
-    public void load(@NotNull CompoundTag nbt) {
-        super.load(nbt);
-        handleUpdateTag(nbt);
+    public void load(@NotNull CompoundTag tag) {
+        super.load(tag);
+        NBTUtils.setBooleanIfPresent(tag, "targetsHostile", value -> targetsHostile = value);
+        NBTUtils.setBooleanIfPresent(tag, "targetsPassive", value -> targetsPassive = value);
+        NBTUtils.setBooleanIfPresent(tag, "targetsPlayers", value -> targetsPlayers = value);
+        NBTUtils.setBooleanIfPresent(tag, "targetsTrusted", value -> targetsTrusted = value);
     }
 
     @Override
     public @NotNull CompoundTag getReducedUpdateTag() {
-        CompoundTag updateTag = super.getReducedUpdateTag();
-        updateTag.putBoolean("targetsHostile", targetsHostile);
-        updateTag.putBoolean("targetsPassive", targetsPassive);
-        updateTag.putBoolean("targetsPlayers", targetsPlayers);
-        updateTag.putBoolean("targetsTrusted", targetsTrusted);
-        return updateTag;
+        CompoundTag tag = super.getReducedUpdateTag();
+        tag.putBoolean("targetsHostile", targetsHostile);
+        tag.putBoolean("targetsPassive", targetsPassive);
+        tag.putBoolean("targetsPlayers", targetsPlayers);
+        tag.putBoolean("targetsTrusted", targetsTrusted);
+        return tag;
     }
 
     @Override
