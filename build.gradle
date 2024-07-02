@@ -37,12 +37,14 @@ minecraft {
 
         client {
             property 'forge.enabledGameTestNamespaces', mod_id
+            args '--username=Dev####'
             jvmArgs "-Xmx3000M"
         }
 
         server {
             property 'forge.enabledGameTestNamespaces', mod_id
-            args '--nogui'
+//            args '--nogui'
+            jvmArgs "-Xmx1200M"
         }
 
         gameTestServer {

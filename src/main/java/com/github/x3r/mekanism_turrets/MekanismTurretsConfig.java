@@ -2,9 +2,13 @@ package com.github.x3r.mekanism_turrets;
 
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretTier;
 import mekanism.common.config.value.CachedIntValue;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.ForgeConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
@@ -33,7 +37,11 @@ public class MekanismTurretsConfig {
     static  {
         BUILDER.push("Mekanism Turrets Config");
 
-        blacklistedEntities = BUILDER.comment("Entities which will never be targeted by turrets").defineListAllowEmpty("blacklistedEntities", List.of("minecraft:wolf", "minecraft:ender_dragon"), MekanismTurretsConfig::isEntityId);
+        List<String> defaultBlacklistedEntities = List.of(
+                ForgeRegistries.ENTITY_TYPES.getKey(EntityType.ENDER_DRAGON).toString(),
+                ForgeRegistries.ENTITY_TYPES.getKey(EntityType.IRON_GOLEM).toString()
+        );
+        blacklistedEntities = BUILDER.comment("Entities which will never be targeted by turrets").defineListAllowEmpty("blacklistedEntities", defaultBlacklistedEntities, MekanismTurretsConfig::isEntityId);
 
         basicLaserTurretCooldown = BUILDER.comment("Cooldown of the Basic Laser Turret").defineInRange("basicLaserTurretCooldown", 80, 0, Integer.MAX_VALUE);
         basicLaserTurretDamage = BUILDER.comment("Damage of the Basic Laser Turret").defineInRange("basicLaserTurretDamage", 1F, 0F, Float.MAX_VALUE);
@@ -48,12 +56,8 @@ public class MekanismTurretsConfig {
         ultimateLaserTurretDamage = BUILDER.comment("Damage of the Ultimate Laser Turret").defineInRange("ultimateLaserTurretDamage", 4F, 0F, Integer.MAX_VALUE);
         ultimateLaserTurretEnergyCapacity = BUILDER.comment("Energy Capacity of the Ultimate Laser Turret").defineInRange("ultimateLaserTurretEnergyCapacity", 160000, 0, Integer.MAX_VALUE);
 
-
         BUILDER.pop();
         SPEC = BUILDER.build();
-
-//        LaserTurretTier.BASIC.setConfigReference(basicLaserTurretCooldown.get(), basicLaserTurretDamage.get(), basicLaserTurretEnergyCapacity.get());
-
     }
 
     private static boolean isEntityId(Object o) {

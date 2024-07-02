@@ -233,22 +233,20 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         }
         UUID owner = SecurityUtils.get().getOwnerUUID(this);
         if(this.targetsPlayers && e instanceof Player player) {
-            boolean isOwner = player.getUUID().equals(owner);
-            if(!isOwner) {
-                if(!this.targetsTrusted) {
-                    // return false if player IS TRUSTED
+            if(!player.getUUID().equals(owner)) {
+                if(this.targetsTrusted) {
+                    // turret targets ALL players
+                    return true;
+                } else {
                     SecurityFrequency frequency = FrequencyType.SECURITY.getManager(null).getFrequency(owner);
                     if(frequency == null) {
                         // if frequency is null, the owner has not "trusted" any players, return true
                         return true;
                     }
                     if(!frequency.getTrustedUUIDs().contains(player.getUUID())) {
-                        // if trusted uuid list does not contain potential target uuid, return true
                         return true;
                     }
                 }
-                // turret doesn't care about which players it targets, return true
-                return true;
             }
         }
         return false;
