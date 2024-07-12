@@ -20,6 +20,7 @@ import mekanism.common.inventory.slot.EnergyInventorySlot;
 import mekanism.common.lib.frequency.FrequencyType;
 import mekanism.common.lib.security.SecurityFrequency;
 import mekanism.common.tile.base.TileEntityMekanism;
+import mekanism.common.tile.component.ITileComponent;
 import mekanism.common.upgrade.IUpgradeData;
 import mekanism.common.util.NBTUtils;
 import mekanism.common.util.SecurityUtils;
@@ -58,7 +59,6 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
 
     @WrappingComputerMethod(wrapper = SpecialComputerMethodWrapper.ComputerIInventorySlotWrapper.class, methodNames = "getEnergyItem", docPlaceholder = "energy slot")
     EnergyInventorySlot energySlot;
-
     public static final SerializableDataTicket<Boolean> HAS_TARGET = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofBoolean(new ResourceLocation(MekanismTurrets.MOD_ID, "has_target")));
     public static final SerializableDataTicket<Double> TARGET_POS_X = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_x")));
     public static final SerializableDataTicket<Double> TARGET_POS_Y = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_y")));
@@ -146,7 +146,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         energyContainer.setEnergyPerTick(FloatingLong.create(laserShotEnergy()));
         if(target != null) {
             setAnimData(TARGET_POS_X, target.getX());
-            setAnimData(TARGET_POS_Y, target.getY());
+            setAnimData(TARGET_POS_Y, target.getY() + target.getBoundingBox().getYsize()/2);
             setAnimData(TARGET_POS_Z, target.getZ());
             if(coolDown == 0) {
                 coolDown = Math.max(0, tier.getCooldown()-(2*upgradeComponent.getUpgrades(Upgrade.SPEED)));
@@ -263,12 +263,14 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
 
     @Override
     public void parseUpgradeData(@NotNull IUpgradeData data) {
-        if(data instanceof LaserTurretUpgradeData) {
-            LaserTurretUpgradeData upgradeData = (LaserTurretUpgradeData) data;
+        if(data instanceof LaserTurretUpgradeData upgradeData) {
             this.targetsHostile = upgradeData.targetsHostile();
             this.targetsPassive = upgradeData.targetsPassive();
             this.targetsPlayers = upgradeData.targetsPlayers();
             this.targetsTrusted = upgradeData.targetsTrusted();
+            for (ITileComponent component : getComponents()) {
+                component.read(upgradeData.components());
+            }
         } else {
             super.parseUpgradeData(data);
         }
@@ -276,7 +278,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
 
     @Override
     public @Nullable IUpgradeData getUpgradeData() {
-        return new LaserTurretUpgradeData(targetsHostile, targetsPassive, targetsPlayers, targetsTrusted);
+        return new LaserTurretUpgradeData(targetsHostile, targetsPassive, targetsPlayers, targetsTrusted, getComponents());
     }
 
     @Override

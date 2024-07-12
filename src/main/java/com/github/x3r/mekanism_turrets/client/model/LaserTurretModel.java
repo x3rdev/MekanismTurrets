@@ -1,10 +1,14 @@
 package com.github.x3r.mekanism_turrets.client.model;
 
 import com.github.x3r.mekanism_turrets.MekanismTurrets;
+import com.github.x3r.mekanism_turrets.common.block.LaserTurretBlock;
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretBlockEntity;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.DefaultedBlockGeoModel;
@@ -62,33 +66,54 @@ public class LaserTurretModel extends DefaultedBlockGeoModel<LaserTurretBlockEnt
     @Override
     public void setCustomAnimations(LaserTurretBlockEntity animatable, long instanceId, AnimationState<LaserTurretBlockEntity> animationState) {
         CoreGeoBone turret = getAnimationProcessor().getBone("turret");
-        if(turret != null) {
+        CoreGeoBone cannon = getAnimationProcessor().getBone("cannon");
+        if(turret != null && cannon != null) {
             if(hasTarget(animatable)) {
-                double targetX = targetX(animatable);
-                double targetY = targetY(animatable);
-                double targetZ = targetZ(animatable);
+                Vec3 targetPos = new Vec3(targetX(animatable), targetY(animatable), targetZ(animatable));
+                Direction direction = animatable.getBlockState().getValue(LaserTurretBlock.FACING);
                 Vec3 center = animatable.getBlockPos().getCenter();
-                double d = targetX - center.x;
-                double e = (targetY + 1.25) - center.y;
-                double f = targetZ - center.z;
-                double g = Math.sqrt(d * d + f * f);
-                float xRot = lerp(animatable.xRot0, (float) Math.atan2(e, g));
+                Vector3f deltaPos = getTransform(direction).transform(new Vec3(targetPos.x - center.x, targetPos.y - center.y, targetPos.z - center.z).toVector3f());
+                double deltaHorizontal = Math.sqrt(deltaPos.x * deltaPos.x + deltaPos.z * deltaPos.z);
+                float xRot = lerp(animatable.xRot0, (float) ((3 * Mth.HALF_PI) + Math.atan2(deltaPos.y, deltaHorizontal)));
+                float yRot = lerp(animatable.yRot0, (float) ((3 * Mth.HALF_PI) - Math.atan2(deltaPos.z, deltaPos.x)));
                 animatable.xRot0 = xRot;
-                turret.setRotX(xRot);
-                float yRot = lerp(animatable.yRot0, (float) ((3 * Mth.HALF_PI) - Math.atan2(f, d)));
                 animatable.yRot0 = yRot;
+                cannon.setRotX(xRot);
                 turret.setRotY(yRot);
             } else {
                 float xRot = lerp(animatable.xRot0, 0);
-                animatable.xRot0 = xRot;
-                turret.setRotX(xRot);
                 float yRot = lerp(animatable.yRot0, 0);
+                animatable.xRot0 = xRot;
                 animatable.yRot0 = yRot;
+                cannon.setRotX(xRot);
                 turret.setRotY(yRot);
             }
         }
     }
 
+    private Quaternionf getTransform(Direction direction) {
+        switch (direction) {
+            case NORTH -> {
+                return new Quaternionf().rotationX((float) (-Math.PI/2));
+            }
+            case EAST -> {
+                return new Quaternionf().rotationZ((float) (-Math.PI/2));
+            }
+            case SOUTH -> {
+                return new Quaternionf().rotationX((float) (Math.PI/2));
+            }
+            case WEST -> {
+                return new Quaternionf().rotationZ((float) (Math.PI/2));
+            }
+            case UP -> {
+                return new Quaternionf().rotationZ((float) Math.PI);
+            }
+            case DOWN -> {
+                return new Quaternionf();
+            }
+        }
+        return new Quaternionf();
+    }
     private float lerp(float start, float end) {
         return Mth.rotLerp(0.1F, start * Mth.RAD_TO_DEG, end * Mth.RAD_TO_DEG) * Mth.DEG_TO_RAD;
     }

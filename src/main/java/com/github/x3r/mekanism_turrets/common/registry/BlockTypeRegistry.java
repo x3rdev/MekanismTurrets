@@ -10,6 +10,7 @@ import mekanism.common.block.attribute.*;
 import mekanism.common.content.blocktype.BlockTypeTile;
 import mekanism.common.registration.impl.BlockRegistryObject;
 import mekanism.common.registration.impl.TileEntityTypeRegistryObject;
+import mekanism.common.util.EnumUtils;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.EnumSet;
@@ -24,7 +25,6 @@ public class BlockTypeRegistry {
     private static <TILE extends LaserTurretBlockEntity> BlockTypeTile<TILE> createLaserTurret(LaserTurretTier tier, Supplier<TileEntityTypeRegistryObject<TILE>> tile, Supplier<BlockRegistryObject<?, ?>> upgradeBlock) {
         return BlockTypeTile.BlockTileBuilder.createBlock(tile, MekanismTurretsLang.DESCRIPTION_LASER_TURRET)
                 .withGui(() -> ContainerTypeRegistry.LASER_TURRET)
-                .withCustomShape(new VoxelShape[]{LaserTurretBlock.LASER_TURRET_SHAPE})
                 .with(new AttributeTier<>(tier), new AttributeUpgradeable(upgradeBlock), Attributes.SECURITY)
                 .without(AttributeParticleFX.class, AttributeStateFacing.class, Attributes.AttributeRedstone.class)
                 .withEnergyConfig(

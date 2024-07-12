@@ -6,9 +6,9 @@
 				"identifier": "geometry.unknown",
 				"texture_width": 64,
 				"texture_height": 64,
-				"visible_bounds_width": 2,
-				"visible_bounds_height": 2.5,
-				"visible_bounds_offset": [0, 0.75, 0]
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 3.5,
+				"visible_bounds_offset": [0, 1.25, 0]
 			},
 			"bones": [
 				{
@@ -32,13 +32,19 @@
 						{"origin": [-4, 4, -3], "size": [8, 1, 6], "uv": [16, 14]},
 						{"origin": [-4, 5, -3], "size": [1, 5, 6], "uv": [0, 28]},
 						{"origin": [-1, 2, -1], "size": [2, 2, 2], "uv": [0, 0]},
-						{"origin": [-5, 7, -1], "size": [10, 1, 1], "uv": [24, 30]}
+						{"origin": [-5, 7, -0.5], "size": [10, 1, 1], "uv": [24, 30]}
 					]
 				},
 				{
 					"name": "cannon",
 					"parent": "turret",
-					"pivot": [0, 0, 0],
+					"pivot": [0, 7.5, 0]
+				},
+				{
+					"name": "bone",
+					"parent": "cannon",
+					"pivot": [0, 7.5, 0],
+					"rotation": [-90, 0, 0],
 					"cubes": [
 						{"origin": [-1, 6.5, -9], "size": [2, 2, 11], "uv": [0, 14]}
 					]

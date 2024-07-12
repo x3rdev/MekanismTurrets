@@ -38,7 +38,13 @@
 				{
 					"name": "cannon",
 					"parent": "turret",
+					"pivot": [0, 10, 0]
+				},
+				{
+					"name": "bone",
+					"parent": "cannon",
 					"pivot": [0, 10, 0],
+					"rotation": [-90, 0, 0],
 					"cubes": [
 						{"origin": [-3, 8, -4], "size": [6, 4, 8], "uv": [0, 14]},
 						{"origin": [-2, 12, -4], "size": [4, 1, 8], "uv": [21, 22]},
@@ -48,7 +54,7 @@
 				},
 				{
 					"name": "cannon_right",
-					"parent": "cannon",
+					"parent": "bone",
 					"pivot": [-2, 10, -4],
 					"cubes": [
 						{"origin": [-2.5, 8, -12], "size": [2, 4, 8], "uv": [13, 32]},
@@ -57,7 +63,7 @@
 				},
 				{
 					"name": "cannon_left",
-					"parent": "cannon",
+					"parent": "bone",
 					"pivot": [2, 10, -4],
 					"cubes": [
 						{"origin": [2.5, 9, -13], "size": [1, 2, 9], "uv": [37, 0]},
@@ -66,7 +72,7 @@
 				},
 				{
 					"name": "recharge",
-					"parent": "cannon",
+					"parent": "bone",
 					"pivot": [0, 12, 6],
 					"cubes": [
 						{"origin": [-1, 12, 5], "size": [2, 3, 1], "uv": [0, 0]}
