@@ -2,8 +2,7 @@ package com.github.x3r.mekanism_turrets.client.gui;
 
 import com.github.x3r.mekanism_turrets.MekanismTurrets;
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretBlockEntity;
-import com.github.x3r.mekanism_turrets.common.packet.MekanismTurretsPacketHandler;
-import com.github.x3r.mekanism_turrets.common.packet.ModifyTurretTargetPacket;
+import com.github.x3r.mekanism_turrets.common.packet.ModifyTurretTargetPayload;
 import mekanism.api.math.FloatingLong;
 import mekanism.client.gui.GuiMekanismTile;
 import mekanism.client.gui.element.bar.GuiVerticalPowerBar;
@@ -11,7 +10,6 @@ import mekanism.client.gui.element.button.ToggleButton;
 import mekanism.client.gui.element.tab.GuiEnergyTab;
 import mekanism.common.MekanismLang;
 import mekanism.common.capabilities.energy.MachineEnergyContainer;
-import mekanism.common.config.MekanismConfig;
 import mekanism.common.inventory.container.tile.MekanismTileContainer;
 import mekanism.common.inventory.warning.WarningTracker;
 import mekanism.common.util.text.EnergyDisplay;
@@ -19,20 +17,21 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class LaserTurretScreen extends GuiMekanismTile<LaserTurretBlockEntity, MekanismTileContainer<LaserTurretBlockEntity>> {
 
-    private static final ResourceLocation TARGET_HOSTILE_OFF = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/gui/target_hostile_off.png");
-    private static final ResourceLocation TARGET_HOSTILE_ON = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/gui/target_hostile_on.png");
-    private static final ResourceLocation TARGET_PASSIVE_OFF = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/gui/target_passive_off.png");
-    private static final ResourceLocation TARGET_PASSIVE_ON = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/gui/target_passive_on.png");
-    private static final ResourceLocation TARGET_PLAYER_OFF = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/gui/target_players_off.png");
-    private static final ResourceLocation TARGET_PLAYER_ON = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/gui/target_players_on.png");
-    private static final ResourceLocation TARGET_TRUSTED_OFF = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/gui/target_trusted_off.png");
-    private static final ResourceLocation TARGET_TRUSTED_ON = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/gui/target_trusted_on.png");
+    private static final ResourceLocation TARGET_HOSTILE_OFF = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/gui/target_hostile_off.png");
+    private static final ResourceLocation TARGET_HOSTILE_ON = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/gui/target_hostile_on.png");
+    private static final ResourceLocation TARGET_PASSIVE_OFF = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/gui/target_passive_off.png");
+    private static final ResourceLocation TARGET_PASSIVE_ON = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/gui/target_passive_on.png");
+    private static final ResourceLocation TARGET_PLAYER_OFF = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/gui/target_players_off.png");
+    private static final ResourceLocation TARGET_PLAYER_ON = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/gui/target_players_on.png");
+    private static final ResourceLocation TARGET_TRUSTED_OFF = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/gui/target_trusted_off.png");
+    private static final ResourceLocation TARGET_TRUSTED_ON = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/gui/target_trusted_on.png");
 
 
 
@@ -55,21 +54,38 @@ public class LaserTurretScreen extends GuiMekanismTile<LaserTurretBlockEntity, M
                 MekanismLang.NEEDED.translate(EnergyDisplay.of(energyPerTick.subtract(tile.getEnergyContainer().getEnergy())))
         )));
         int i = 25;
+        //Component.translatable("gui.turret.target_hostile")
         addRenderableWidget(new ToggleButton(this, 40, 33, 20, 20, TARGET_HOSTILE_OFF, TARGET_HOSTILE_ON, tile::targetsHostile,
-                () -> MekanismTurretsPacketHandler.sendToServer(new ModifyTurretTargetPacket(tile.getBlockPos(), (byte) 0, !tile.targetsHostile())),
-                (element, guiGraphics, mouseX, mouseY) -> guiGraphics.renderComponentTooltip(font, List.of(Component.translatable("gui.turret.target_hostile")), mouseX, mouseY)
+                (element, mouseX, mouseY) -> {
+                    PacketDistributor.sendToServer(new ModifyTurretTargetPayload(tile.getBlockPos(), (byte) 0, !tile.targetsHostile()));
+                    return true;
+                },
+                Component.literal("target hostile"),
+                Component.literal("stop targeting hostiles")
         ));
         addRenderableWidget(new ToggleButton(this, 40+i, 33, 20, 20, TARGET_PASSIVE_OFF, TARGET_PASSIVE_ON, tile::targetsPassive,
-                () -> MekanismTurretsPacketHandler.sendToServer(new ModifyTurretTargetPacket(tile.getBlockPos(), (byte) 1, !tile.targetsPassive())),
-                (element, guiGraphics, mouseX, mouseY) -> guiGraphics.renderComponentTooltip(font, List.of(Component.translatable("gui.turret.target_passive")), mouseX, mouseY)
+                (element, mouseX, mouseY) -> {
+                    PacketDistributor.sendToServer(new ModifyTurretTargetPayload(tile.getBlockPos(), (byte) 1, !tile.targetsHostile()));
+                    return true;
+                },
+                Component.translatable("gui.turret.target_passive"),
+                Component.translatable("gui.turret.target_players")
         ));
         addRenderableWidget(new ToggleButton(this, 40+2*i, 33, 20, 20, TARGET_PLAYER_OFF, TARGET_PLAYER_ON, tile::targetsPlayers,
-                () -> MekanismTurretsPacketHandler.sendToServer(new ModifyTurretTargetPacket(tile.getBlockPos(), (byte) 2, !tile.targetsPlayers())),
-                (element, guiGraphics, mouseX, mouseY) -> guiGraphics.renderComponentTooltip(font, List.of(Component.translatable("gui.turret.target_players")), mouseX, mouseY)
+                (element, mouseX, mouseY) -> {
+                    PacketDistributor.sendToServer(new ModifyTurretTargetPayload(tile.getBlockPos(), (byte) 2, !tile.targetsHostile()));
+                    return true;
+                },
+                Component.translatable("gui.turret.target_players"),
+                Component.translatable("gui.turret.target_players")
         ));
         addRenderableWidget(new ToggleButton(this, 40+3*i, 33, 20, 20, TARGET_TRUSTED_OFF, TARGET_TRUSTED_ON, tile::targetsTrusted,
-                () -> MekanismTurretsPacketHandler.sendToServer(new ModifyTurretTargetPacket(tile.getBlockPos(), (byte) 3, !tile.targetsTrusted())),
-                (element, guiGraphics, mouseX, mouseY) -> guiGraphics.renderComponentTooltip(font, List.of(Component.translatable("gui.turret.target_trusted")), mouseX, mouseY)
+                (element, mouseX, mouseY) -> {
+                    PacketDistributor.sendToServer(new ModifyTurretTargetPayload(tile.getBlockPos(), (byte) 3, !tile.targetsHostile()));
+                    return true;
+                },
+                Component.translatable("gui.turret.target_trusted"),
+                Component.translatable("gui.turret.target_trusted")
         ){
             @Override
             public void drawBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {

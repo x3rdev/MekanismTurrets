@@ -17,8 +17,8 @@ public class DamageTypeRegistry {
 
     public DamageTypeRegistry(RegistryAccess registryAccess) {
         this.damageTypes = registryAccess.registryOrThrow(Registries.DAMAGE_TYPE);
-        this.electricFence = source(ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(MekanismTurrets.MOD_ID, "electric_fence")));
-        this.laser = source(ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(MekanismTurrets.MOD_ID, "laser")));
+        this.electricFence = source(ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "electric_fence")));
+        this.laser = source(ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "laser")));
     }
 
     private DamageSource source(ResourceKey<DamageType> pDamageTypeKey) {

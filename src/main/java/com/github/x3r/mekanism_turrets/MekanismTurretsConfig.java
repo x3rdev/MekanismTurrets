@@ -1,45 +1,39 @@
 package com.github.x3r.mekanism_turrets;
 
-import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretTier;
-import mekanism.common.config.value.CachedIntValue;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.common.ForgeConfig;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.List;
 
 public class MekanismTurretsConfig {
 
-    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec SPEC;
+    public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    public static final ModConfigSpec SPEC;
 
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistedEntities;
+    public static ModConfigSpec.ConfigValue<List<? extends String>> blacklistedEntities;
 
-    public static ForgeConfigSpec.IntValue basicLaserTurretCooldown;
-    public static ForgeConfigSpec.DoubleValue basicLaserTurretDamage;
-    public static ForgeConfigSpec.IntValue basicLaserTurretEnergyCapacity;
-    public static ForgeConfigSpec.IntValue advancedLaserTurretCooldown;
-    public static ForgeConfigSpec.DoubleValue advancedLaserTurretDamage;
-    public static ForgeConfigSpec.IntValue advancedLaserTurretEnergyCapacity;
-    public static ForgeConfigSpec.IntValue eliteLaserTurretCooldown;
-    public static ForgeConfigSpec.DoubleValue eliteLaserTurretDamage;
-    public static ForgeConfigSpec.IntValue eliteLaserTurretEnergyCapacity;
-    public static ForgeConfigSpec.IntValue ultimateLaserTurretCooldown;
-    public static ForgeConfigSpec.DoubleValue ultimateLaserTurretDamage;
-    public static ForgeConfigSpec.IntValue ultimateLaserTurretEnergyCapacity;
+    public static ModConfigSpec.IntValue basicLaserTurretCooldown;
+    public static ModConfigSpec.DoubleValue basicLaserTurretDamage;
+    public static ModConfigSpec.IntValue basicLaserTurretEnergyCapacity;
+    public static ModConfigSpec.IntValue advancedLaserTurretCooldown;
+    public static ModConfigSpec.DoubleValue advancedLaserTurretDamage;
+    public static ModConfigSpec.IntValue advancedLaserTurretEnergyCapacity;
+    public static ModConfigSpec.IntValue eliteLaserTurretCooldown;
+    public static ModConfigSpec.DoubleValue eliteLaserTurretDamage;
+    public static ModConfigSpec.IntValue eliteLaserTurretEnergyCapacity;
+    public static ModConfigSpec.IntValue ultimateLaserTurretCooldown;
+    public static ModConfigSpec.DoubleValue ultimateLaserTurretDamage;
+    public static ModConfigSpec.IntValue ultimateLaserTurretEnergyCapacity;
 
 
     static  {
         BUILDER.push("Mekanism Turrets Config");
 
         List<String> defaultBlacklistedEntities = List.of(
-                ForgeRegistries.ENTITY_TYPES.getKey(EntityType.ENDER_DRAGON).toString(),
-                ForgeRegistries.ENTITY_TYPES.getKey(EntityType.IRON_GOLEM).toString()
+                BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.ENDER_DRAGON).toString(),
+                BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.IRON_GOLEM).toString()
         );
         blacklistedEntities = BUILDER.comment("Entities which will never be targeted by turrets").defineListAllowEmpty("blacklistedEntities", defaultBlacklistedEntities, MekanismTurretsConfig::isEntityId);
 
@@ -61,6 +55,6 @@ public class MekanismTurretsConfig {
     }
 
     private static boolean isEntityId(Object o) {
-        return o instanceof String string && ForgeRegistries.ENTITY_TYPES.containsKey(new ResourceLocation(string));
+        return o instanceof String string && BuiltInRegistries.ENTITY_TYPE.containsKey(ResourceLocation.parse(string));
     }
 }

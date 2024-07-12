@@ -17,14 +17,14 @@ import mekanism.common.capabilities.holder.slot.InventorySlotHelper;
 import mekanism.common.integration.computer.SpecialComputerMethodWrapper;
 import mekanism.common.integration.computer.annotation.WrappingComputerMethod;
 import mekanism.common.inventory.slot.EnergyInventorySlot;
-import mekanism.common.lib.frequency.FrequencyType;
 import mekanism.common.lib.security.SecurityFrequency;
 import mekanism.common.tile.base.TileEntityMekanism;
 import mekanism.common.tile.component.ITileComponent;
 import mekanism.common.upgrade.IUpgradeData;
 import mekanism.common.util.NBTUtils;
-import mekanism.common.util.SecurityUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
@@ -37,17 +37,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.Animation;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.network.SerializableDataTicket;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.constant.dataticket.SerializableDataTicket;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
@@ -56,13 +52,12 @@ import java.util.UUID;
 
 
 public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlockEntity {
-
     @WrappingComputerMethod(wrapper = SpecialComputerMethodWrapper.ComputerIInventorySlotWrapper.class, methodNames = "getEnergyItem", docPlaceholder = "energy slot")
     EnergyInventorySlot energySlot;
-    public static final SerializableDataTicket<Boolean> HAS_TARGET = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofBoolean(new ResourceLocation(MekanismTurrets.MOD_ID, "has_target")));
-    public static final SerializableDataTicket<Double> TARGET_POS_X = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_x")));
-    public static final SerializableDataTicket<Double> TARGET_POS_Y = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_y")));
-    public static final SerializableDataTicket<Double> TARGET_POS_Z = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_z")));
+    public static final SerializableDataTicket<Boolean> HAS_TARGET = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofBoolean(ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "has_target")));
+    public static final SerializableDataTicket<Double> TARGET_POS_X = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "target_pos_x")));
+    public static final SerializableDataTicket<Double> TARGET_POS_Y = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "target_pos_y")));
+    public static final SerializableDataTicket<Double> TARGET_POS_Z = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "target_pos_z")));
     private static final RawAnimation SHOOT_ANIMATION = RawAnimation.begin().then("shoot", Animation.LoopType.PLAY_ONCE);
     private static final float MAX_RANGE = 20;
     private final AABB targetBox = AABB.ofSize(getBlockPos().getCenter(), MAX_RANGE, MAX_RANGE, MAX_RANGE);
@@ -138,8 +133,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     @Override
-    protected void onUpdateServer() {
-        super.onUpdateServer();
+    protected boolean onUpdateServer() {
         energySlot.fillContainerOrConvert();
         tryInvalidateTarget();
         tryFindTarget();
@@ -160,7 +154,10 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
                 coolDown--;
             }
         }
+        return super.onUpdateServer();
     }
+
+    //    @Override
 
     private void shootLaser() {
         if(target != null) {
@@ -211,7 +208,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         if(e.distanceToSqr(this.getBlockPos().getCenter()) > MAX_RANGE*MAX_RANGE) {
             return false;
         }
-        if(MekanismTurretsConfig.blacklistedEntities.get().stream().map(s -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(s))).anyMatch(entityType -> e.getType().equals(entityType))) {
+        if(MekanismTurretsConfig.blacklistedEntities.get().stream().map(s -> BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(s))).anyMatch(entityType -> e.getType().equals(entityType))) {
             return false;
         }
         if(!turretFlagsAllowTargeting(e)) {
@@ -231,19 +228,20 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         if(this.targetsPassive && category.isFriendly() && !category.equals(MobCategory.MISC)) {
             return true;
         }
-        UUID owner = SecurityUtils.get().getOwnerUUID(this);
+        UUID owner = getOwnerUUID();
+
         if(this.targetsPlayers && e instanceof Player player) {
             if(!player.getUUID().equals(owner)) {
                 if(this.targetsTrusted) {
                     // turret targets ALL players
                     return true;
                 } else {
-                    SecurityFrequency frequency = FrequencyType.SECURITY.getManager(null).getFrequency(owner);
+                    SecurityFrequency frequency = getSecurity().getFrequency();
                     if(frequency == null) {
                         // if frequency is null, the owner has not "trusted" any players, return true
                         return true;
                     }
-                    if(!frequency.getTrustedUUIDs().contains(player.getUUID())) {
+                    if(!frequency.isTrusted(player.getUUID())) {
                         return true;
                     }
                 }
@@ -257,28 +255,28 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         Vec3 center = getBlockPos().getCenter();
         Vec3 targetCenter = e.position().add(0, mobHeight/2, 0);
         Vec3 lookVec = center.vectorTo(targetCenter).normalize().scale(0.75F);
-        ClipContext ctx = new ClipContext(center.add(lookVec), targetCenter, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null);
+        ClipContext ctx = new ClipContext(center.add(lookVec), targetCenter, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
         return level.clip(ctx).getType().equals(HitResult.Type.MISS);
     }
 
     @Override
-    public void parseUpgradeData(@NotNull IUpgradeData data) {
+    public void parseUpgradeData(HolderLookup.Provider provider, @NotNull IUpgradeData data) {
         if(data instanceof LaserTurretUpgradeData upgradeData) {
             this.targetsHostile = upgradeData.targetsHostile();
             this.targetsPassive = upgradeData.targetsPassive();
             this.targetsPlayers = upgradeData.targetsPlayers();
             this.targetsTrusted = upgradeData.targetsTrusted();
             for (ITileComponent component : getComponents()) {
-                component.read(upgradeData.components());
+                component.read(upgradeData.components(), provider);
             }
         } else {
-            super.parseUpgradeData(data);
+            super.parseUpgradeData(provider, data);
         }
     }
 
     @Override
-    public @Nullable IUpgradeData getUpgradeData() {
-        return new LaserTurretUpgradeData(targetsHostile, targetsPassive, targetsPlayers, targetsTrusted, getComponents());
+    public @Nullable IUpgradeData getUpgradeData(HolderLookup.Provider provider) {
+        return new LaserTurretUpgradeData(targetsHostile, targetsPassive, targetsPlayers, targetsTrusted, getComponents(), provider);
     }
 
     @Override
@@ -288,8 +286,8 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putBoolean("targetsHostile", targetsHostile);
         tag.putBoolean("targetsPassive", targetsPassive);
         tag.putBoolean("targetsPlayers", targetsPlayers);
@@ -297,8 +295,8 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         NBTUtils.setBooleanIfPresent(tag, "targetsHostile", value -> targetsHostile = value);
         NBTUtils.setBooleanIfPresent(tag, "targetsPassive", value -> targetsPassive = value);
         NBTUtils.setBooleanIfPresent(tag, "targetsPlayers", value -> targetsPlayers = value);
@@ -306,8 +304,8 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     @Override
-    public @NotNull CompoundTag getReducedUpdateTag() {
-        CompoundTag tag = super.getReducedUpdateTag();
+    public @NotNull CompoundTag getReducedUpdateTag(@NotNull HolderLookup.Provider provider) {
+        CompoundTag tag = super.getReducedUpdateTag(provider);
         tag.putBoolean("targetsHostile", targetsHostile);
         tag.putBoolean("targetsPassive", targetsPassive);
         tag.putBoolean("targetsPlayers", targetsPlayers);
@@ -316,8 +314,8 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     @Override
-    public void handleUpdateTag(@NotNull CompoundTag tag) {
-        super.handleUpdateTag(tag);
+    public void handleUpdateTag(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider provider) {
+        super.handleUpdateTag(tag, provider);
         NBTUtils.setBooleanIfPresent(tag, "targetsHostile", value -> targetsHostile = value);
         NBTUtils.setBooleanIfPresent(tag, "targetsPassive", value -> targetsPassive = value);
         NBTUtils.setBooleanIfPresent(tag, "targetsPlayers", value -> targetsPlayers = value);

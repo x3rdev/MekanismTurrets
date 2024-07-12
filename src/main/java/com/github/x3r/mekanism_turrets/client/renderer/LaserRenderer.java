@@ -18,7 +18,7 @@ import org.joml.Matrix4f;
 
 public class LaserRenderer<T extends LaserEntity> extends EntityRenderer<T> {
 
-    public static final ResourceLocation LASER_TEXTURE = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/entity/laser.png");
+    public static final ResourceLocation LASER_TEXTURE = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/entity/laser.png");
     public LaserRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);
     }
@@ -34,18 +34,16 @@ public class LaserRenderer<T extends LaserEntity> extends EntityRenderer<T> {
         pPoseStack.translate(0F, 2.5F, 0F);
         VertexConsumer vertexconsumer = pBuffer.getBuffer(RenderType.eyes(this.getTextureLocation(pEntity)));
         PoseStack.Pose pose = pPoseStack.last();
-        Matrix4f matrix4f = pose.pose();
-        Matrix3f matrix3f = pose.normal();
 
         for (int i = 0; i < 4; i++) {
-            longFace(matrix4f, matrix3f, vertexconsumer, pPackedLight);
+            longFace(pose, vertexconsumer, pPackedLight);
             pPoseStack.translate(0F, 2F, -2F);
             pPoseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
         }
         pPoseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
         pPoseStack.translate(-8F, 0F, -2F);
         for (int i = 0; i < 2; i++) {
-            shortFace(matrix4f, matrix3f, vertexconsumer, pPackedLight);
+            shortFace(pose, vertexconsumer, pPackedLight);
             pPoseStack.translate(16F, 0F, 0F);
             pPoseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
         }
@@ -54,22 +52,22 @@ public class LaserRenderer<T extends LaserEntity> extends EntityRenderer<T> {
         super.render(pEntity, pEntityYaw, pPartialTick, pPoseStack, pBuffer, pPackedLight);
     }
 
-    private void shortFace(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexconsumer, int pPackedLight) {
-        this.vertex(matrix4f, matrix3f, vertexconsumer, 0, -2, -2, 0.0F, 0.0F, 0, -1, 0, pPackedLight);
-        this.vertex(matrix4f, matrix3f, vertexconsumer, 0, -2, 2, 0.125F, 0.0F, 0, -1, 0, pPackedLight);
-        this.vertex(matrix4f, matrix3f, vertexconsumer, 0, 2, 2, 0.125F, 0.125F, 0, -1, 0, pPackedLight);
-        this.vertex(matrix4f, matrix3f, vertexconsumer, 0, 2, -2, 0.0F, 0.125F, 0, -1, 0, pPackedLight);
+    private void shortFace(PoseStack.Pose pose, VertexConsumer vertexconsumer, int pPackedLight) {
+        this.vertex(pose, vertexconsumer, 0, -2, -2, 0.0F, 0.0F, 0, -1, 0, pPackedLight);
+        this.vertex(pose, vertexconsumer, 0, -2, 2, 0.125F, 0.0F, 0, -1, 0, pPackedLight);
+        this.vertex(pose, vertexconsumer, 0, 2, 2, 0.125F, 0.125F, 0, -1, 0, pPackedLight);
+        this.vertex(pose, vertexconsumer, 0, 2, -2, 0.0F, 0.125F, 0, -1, 0, pPackedLight);
     }
 
-    private void longFace(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexconsumer, int pPackedLight) {
-        this.vertex(matrix4f, matrix3f, vertexconsumer, -8, 0, -2, 0.0F, 0.0F, 0, -1, 0, pPackedLight);
-        this.vertex(matrix4f, matrix3f, vertexconsumer, 8, 0, -2, 0.375F, 0.0F, 0, -1, 0, pPackedLight);
-        this.vertex(matrix4f, matrix3f, vertexconsumer, 8, 0, 2, 0.375F, 0.125F, 0, -1, 0, pPackedLight);
-        this.vertex(matrix4f, matrix3f, vertexconsumer, -8, 0, 2, 0.0F, 0.125F, 0, -1, 0, pPackedLight);
+    private void longFace(PoseStack.Pose pose, VertexConsumer vertexconsumer, int pPackedLight) {
+        this.vertex(pose, vertexconsumer, -8, 0, -2, 0.0F, 0.0F, 0, -1, 0, pPackedLight);
+        this.vertex(pose, vertexconsumer, 8, 0, -2, 0.375F, 0.0F, 0, -1, 0, pPackedLight);
+        this.vertex(pose, vertexconsumer, 8, 0, 2, 0.375F, 0.125F, 0, -1, 0, pPackedLight);
+        this.vertex(pose, vertexconsumer, -8, 0, 2, 0.0F, 0.125F, 0, -1, 0, pPackedLight);
     }
 
-    public void vertex(Matrix4f pMatrix, Matrix3f pNormal, VertexConsumer pConsumer, int pX, int pY, int pZ, float pU, float pV, int pNormalX, int pNormalZ, int pNormalY, int pPackedLight) {
-        pConsumer.vertex(pMatrix, pX, pY, pZ).color(255, 255, 255, 255).uv(pU, pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pPackedLight).normal(pNormal, (float)pNormalX, (float)pNormalY, (float)pNormalZ).endVertex();
+    public void vertex(PoseStack.Pose pose, VertexConsumer pConsumer, int pX, int pY, int pZ, float pU, float pV, int pNormalX, int pNormalZ, int pNormalY, int pPackedLight) {
+        pConsumer.addVertex(pose, pX, pY, pZ).setColor(255, 255, 255, 255).setUv(pU, pV).setOverlay(OverlayTexture.NO_OVERLAY).setLight(pPackedLight).setNormal(pose, (float)pNormalX, (float)pNormalY, (float)pNormalZ);
     }
 
     private void fixRotation(T entity) {

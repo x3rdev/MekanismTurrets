@@ -9,28 +9,28 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
-import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.DefaultedBlockGeoModel;
 
 public class LaserTurretModel extends DefaultedBlockGeoModel<LaserTurretBlockEntity> {
 
-    private static final ResourceLocation MODEL_BASIC = new ResourceLocation(MekanismTurrets.MOD_ID, "geo/block/basic_laser_turret.geo.json");
-    private static final ResourceLocation MODEL_ADVANCED = new ResourceLocation(MekanismTurrets.MOD_ID, "geo/block/advanced_laser_turret.geo.json");
-    private static final ResourceLocation MODEL_ELITE = new ResourceLocation(MekanismTurrets.MOD_ID, "geo/block/elite_laser_turret.geo.json");
-    private static final ResourceLocation MODEL_ULTIMATE = new ResourceLocation(MekanismTurrets.MOD_ID, "geo/block/ultimate_laser_turret.geo.json");
+    private static final ResourceLocation MODEL_BASIC = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "geo/block/basic_laser_turret.geo.json");
+    private static final ResourceLocation MODEL_ADVANCED = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "geo/block/advanced_laser_turret.geo.json");
+    private static final ResourceLocation MODEL_ELITE = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "geo/block/elite_laser_turret.geo.json");
+    private static final ResourceLocation MODEL_ULTIMATE = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "geo/block/ultimate_laser_turret.geo.json");
 
-    private static final ResourceLocation TEXTURE_BASIC = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/block/basic_laser_turret.png");
-    private static final ResourceLocation TEXTURE_ADVANCED = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/block/advanced_laser_turret.png");
-    private static final ResourceLocation TEXTURE_ELITE = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/block/elite_laser_turret.png");
-    private static final ResourceLocation TEXTURE_ULTIMATE = new ResourceLocation(MekanismTurrets.MOD_ID, "textures/block/ultimate_laser_turret.png");
+    private static final ResourceLocation TEXTURE_BASIC = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/block/basic_laser_turret.png");
+    private static final ResourceLocation TEXTURE_ADVANCED = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/block/advanced_laser_turret.png");
+    private static final ResourceLocation TEXTURE_ELITE = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/block/elite_laser_turret.png");
+    private static final ResourceLocation TEXTURE_ULTIMATE = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "textures/block/ultimate_laser_turret.png");
 
-    private static final ResourceLocation ANIMATION_BASIC = new ResourceLocation(MekanismTurrets.MOD_ID, "animations/block/basic_anim.json");
-    private static final ResourceLocation ANIMATION_ADVANCED = new ResourceLocation(MekanismTurrets.MOD_ID, "animations/block/advanced_anim.json");
-    private static final ResourceLocation ANIMATION_ELITE = new ResourceLocation(MekanismTurrets.MOD_ID, "animations/block/elite_anim.json");
-    private static final ResourceLocation ANIMATION_ULTIMATE = new ResourceLocation(MekanismTurrets.MOD_ID, "animations/block/ultimate_anim.json");
+    private static final ResourceLocation ANIMATION_BASIC = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "animations/block/basic_anim.json");
+    private static final ResourceLocation ANIMATION_ADVANCED = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "animations/block/advanced_anim.json");
+    private static final ResourceLocation ANIMATION_ELITE = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "animations/block/elite_anim.json");
+    private static final ResourceLocation ANIMATION_ULTIMATE = ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "animations/block/ultimate_anim.json");
     public LaserTurretModel() {
-        super(new ResourceLocation(MekanismTurrets.MOD_ID, "laser_turret"));
+        super(ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "laser_turret"));
     }
 
     @Override
@@ -65,8 +65,8 @@ public class LaserTurretModel extends DefaultedBlockGeoModel<LaserTurretBlockEnt
 
     @Override
     public void setCustomAnimations(LaserTurretBlockEntity animatable, long instanceId, AnimationState<LaserTurretBlockEntity> animationState) {
-        CoreGeoBone turret = getAnimationProcessor().getBone("turret");
-        CoreGeoBone cannon = getAnimationProcessor().getBone("cannon");
+        GeoBone turret = getAnimationProcessor().getBone("turret");
+        GeoBone cannon = getAnimationProcessor().getBone("cannon");
         if(turret != null && cannon != null) {
             if(hasTarget(animatable)) {
                 Vec3 targetPos = new Vec3(targetX(animatable), targetY(animatable), targetZ(animatable));
@@ -90,6 +90,7 @@ public class LaserTurretModel extends DefaultedBlockGeoModel<LaserTurretBlockEnt
             }
         }
     }
+
 
     private Quaternionf getTransform(Direction direction) {
         switch (direction) {

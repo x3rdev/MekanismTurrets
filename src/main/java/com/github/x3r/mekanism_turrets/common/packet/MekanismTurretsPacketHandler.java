@@ -1,34 +1,27 @@
 package com.github.x3r.mekanism_turrets.common.packet;
 
 import com.github.x3r.mekanism_turrets.MekanismTurrets;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handlers.ClientPayloadHandler;
+import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
+import net.neoforged.neoforge.network.handling.ServerPayloadContext;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class MekanismTurretsPacketHandler {
 
     private static final String PROTOCOL_VERSION = "1";
-
-    private static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(MekanismTurrets.MOD_ID, "main"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals
-    );
-
-    public static void registerPackets() {
-        int id = 0;
-        INSTANCE.registerMessage(id++, ModifyTurretTargetPacket.class, ModifyTurretTargetPacket::encode, ModifyTurretTargetPacket::decode, ModifyTurretTargetPacket::receivePacket);
-    }
-
-    public static void sendToClient(Object msg, ServerPlayer player) {
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), msg);
-    }
-
-
-    public static void sendToServer(Object msg) {
-        INSTANCE.send(PacketDistributor.SERVER.noArg(), msg);
+    @SubscribeEvent
+    public static void registerPayloadHandler(RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
+        registrar.playToClient(
+                ModifyTurretTargetPayload.TYPE,
+                ModifyTurretTargetPayload.STREAM_CODEC,
+                new DirectionalPayloadHandler<>(
+                        (payload, context) -> {},
+                        ModifyTurretTargetPayload::handleServer
+                )
+        );
     }
 }

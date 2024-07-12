@@ -1,6 +1,5 @@
 package com.github.x3r.mekanism_turrets.common.block;
 
-import com.github.x3r.mekanism_turrets.MekanismTurrets;
 import com.github.x3r.mekanism_turrets.common.block_entity.ElectricFenceBlockEntity;
 import com.github.x3r.mekanism_turrets.common.registry.BlockEntityTypeRegistry;
 import com.github.x3r.mekanism_turrets.common.registry.DamageTypeRegistry;
@@ -10,13 +9,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.Nullable;
 
 public class ElectricFenceBlock extends IronBarsBlock implements IHasTileEntity<ElectricFenceBlockEntity> {
@@ -26,17 +24,16 @@ public class ElectricFenceBlock extends IronBarsBlock implements IHasTileEntity<
 
     @Override
     public void entityInside(BlockState pState, Level pLevel, BlockPos pPos, Entity pEntity) {
-        pLevel.getBlockEntity(pPos, BlockEntityTypeRegistry.ELECTRIC_FENCE.get()).ifPresent(blockEntity -> {
-            blockEntity.getCapability(ForgeCapabilities.ENERGY).ifPresent(energyStorage -> {
-                int total = energyStorage.getEnergyStored();
-                if(total > 0 && pEntity instanceof LivingEntity && pEntity.isAlive()) {
-                    float ratio = (float) energyStorage.getEnergyStored() / energyStorage.getMaxEnergyStored();
-                    boolean b = pEntity.hurt(new DamageTypeRegistry(pLevel.registryAccess()).electricFence(), ratio * 10.0F);
-                    if(b) {
-                        energyStorage.extractEnergy((int) (energyStorage.getEnergyStored() * 0.1F), false);
-                    }
+        pLevel.getBlockEntity(pPos, BlockEntityTypeRegistry.ELECTRIC_FENCE.get()).ifPresent(electricFence -> {
+            IEnergyStorage energyStorage = electricFence.energyStorage;
+            int total = energyStorage.getEnergyStored();
+            if(total > 0 && pEntity instanceof LivingEntity && pEntity.isAlive()) {
+                float ratio = (float) energyStorage.getEnergyStored() / energyStorage.getMaxEnergyStored();
+                boolean b = pEntity.hurt(new DamageTypeRegistry(pLevel.registryAccess()).electricFence(), ratio * 10.0F);
+                if(b) {
+                    energyStorage.extractEnergy((int) (energyStorage.getEnergyStored() * 0.1F), false);
                 }
-            });
+            }
         });
     }
 
@@ -53,7 +50,7 @@ public class ElectricFenceBlock extends IronBarsBlock implements IHasTileEntity<
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        return pLevel.isClientSide() ? null : BaseEntityBlock.createTickerHelper(pBlockEntityType, BlockEntityTypeRegistry.ELECTRIC_FENCE.get(), ElectricFenceBlockEntity::serverTick);
+        return pLevel.isClientSide() ? null : (pLevel1, pPos, pState1, pBlockEntity) -> ElectricFenceBlockEntity.serverTick(pLevel1, pPos, pState1, (ElectricFenceBlockEntity) pBlockEntity);
     }
 
 

@@ -3,15 +3,10 @@ package com.github.x3r.mekanism_turrets.common.block;
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretBlockEntity;
 import mekanism.common.block.prefab.BlockTile;
 import mekanism.common.content.blocktype.BlockTypeTile;
-import mekanism.common.content.blocktype.Machine;
 import mekanism.common.resource.BlockResourceInfo;
-import mekanism.common.tile.base.WrenchResult;
-import mekanism.common.util.EnumUtils;
-import mekanism.common.util.VoxelShapeUtils;
 import mekanism.common.util.WorldUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -23,10 +18,8 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -69,14 +62,13 @@ public class LaserTurretBlock extends BlockTile.BlockTileModel<LaserTurretBlockE
     }
 
     @Override
-    public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+    protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hit) {
         LaserTurretBlockEntity tile = WorldUtils.getTileEntity(LaserTurretBlockEntity.class, world, pos, true);
         if (tile == null) {
             return InteractionResult.PASS;
-        } else if (world.isClientSide) {
-            return genericClientActivated(player, hand);
-        } else if (tile.tryWrench(state, player, hand, hit) != WrenchResult.PASS) {
-            return InteractionResult.SUCCESS;
+        }
+        if (world.isClientSide) {
+            return InteractionResult.SUCCESS_NO_ITEM_USED;
         }
         return tile.openGui(player);
     }

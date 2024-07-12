@@ -2,6 +2,7 @@ package com.github.x3r.mekanism_turrets.common.entity;
 
 import com.github.x3r.mekanism_turrets.common.registry.DamageTypeRegistry;
 import com.github.x3r.mekanism_turrets.common.registry.EntityRegistry;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -24,6 +25,11 @@ public class LaserEntity extends Projectile {
         this(EntityRegistry.LASER.get(), pLevel);
         this.setPos(pos);
         this.damage = damage;
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder pBuilder) {
+
     }
 
     @Override
@@ -58,10 +64,5 @@ public class LaserEntity extends Projectile {
         if(!level().isClientSide() && level().getBlockState(pResult.getBlockPos()).isCollisionShapeFullBlock(level(), pResult.getBlockPos())) {
             this.discard();
         }
-    }
-
-    @Override
-    protected void defineSynchedData() {
-
     }
 }

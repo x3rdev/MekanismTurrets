@@ -1,8 +1,10 @@
 package com.github.x3r.mekanism_turrets.common.capability;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import org.jetbrains.annotations.UnknownNullability;
 
 public class MTEnergyStorage implements IEnergyStorage, INBTSerializable<CompoundTag> {
 
@@ -77,7 +79,7 @@ public class MTEnergyStorage implements IEnergyStorage, INBTSerializable<Compoun
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
         tag.putInt("MaxReceive", maxReceive);
         tag.putInt("MaxExtract", maxExtract);
@@ -87,7 +89,7 @@ public class MTEnergyStorage implements IEnergyStorage, INBTSerializable<Compoun
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         CompoundTag tag = nbt.getCompound(MTEnergyStorage.TAG_KEY);
         this.maxReceive = tag.getInt("MaxReceive");
         this.maxExtract = tag.getInt("MaxExtract");

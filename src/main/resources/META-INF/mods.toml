@@ -1,16 +1,16 @@
-modLoader="javafml" #mandatory
+modLoader="javafml"
 loaderVersion="${loader_version_range}"
 license="${mod_license}"
-[[mods]] #mandatory
-modId="${mod_id}"
-version="${mod_version}"
-displayName="${mod_name}"
-authors="${mod_authors}"
-description='''${mod_description}'''
+[[mods]]
+   modId="${mod_id}"
+   version="${mod_version}"
+   displayName="${mod_name}"
+   authors="${mod_authors}"
+   description='''${mod_description}'''
 [[dependencies.${mod_id}]]
-   modId="forge"
+   modId="neoforge"
    mandatory=true
-   versionRange="${forge_version_range}"
+   versionRange="${neo_version_range}"
    ordering="NONE"
    side="BOTH"
 [[dependencies.${mod_id}]]
@@ -22,12 +22,12 @@ description='''${mod_description}'''
 [[dependencies.${mod_id}]]
    modId="mekanism"
    mandatory=true
-   versionRange="10.4.5.19"
+   versionRange="${mekanism_version_range}"
    ordering="NONE"
    side="BOTH"
 [[dependencies.${mod_id}]]
    modId="geckolib"
    mandatory=true
-   versionRange="4.4.4"
+   versionRange="${geckolib_version_range}"
    ordering="NONE"
    side="BOTH"

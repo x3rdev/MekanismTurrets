@@ -2,6 +2,7 @@ package com.github.x3r.mekanism_turrets.common.block_entity;
 
 import mekanism.common.tile.component.ITileComponent;
 import mekanism.common.upgrade.IUpgradeData;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.List;
@@ -14,14 +15,14 @@ public final class LaserTurretUpgradeData implements IUpgradeData {
     private final boolean targetsTrusted;
     private final CompoundTag components;
 
-    public LaserTurretUpgradeData(boolean targetsHostile, boolean targetsPassive, boolean targetsPlayers, boolean targetsTrusted, List<ITileComponent> components) {
+    public LaserTurretUpgradeData(boolean targetsHostile, boolean targetsPassive, boolean targetsPlayers, boolean targetsTrusted, List<ITileComponent> components, HolderLookup.Provider provider) {
         this.targetsHostile = targetsHostile;
         this.targetsPassive = targetsPassive;
         this.targetsPlayers = targetsPlayers;
         this.targetsTrusted = targetsTrusted;
         this.components = new CompoundTag();
         for (ITileComponent component : components) {
-            component.write(this.components);
+            component.write(this.components, provider);
         }
     }
 
