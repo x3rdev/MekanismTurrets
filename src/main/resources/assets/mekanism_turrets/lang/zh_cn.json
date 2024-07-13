@@ -1,0 +1,20 @@
+{
+  "container.mekanism_turrets.basic_laser_turret": "基础激光炮塔",
+  "container.mekanism_turrets.advanced_laser_turret": "高级激光炮塔",
+  "container.mekanism_turrets.elite_laser_turret": "精英激光炮塔",
+  "container.mekanism_turrets.ultimate_laser_turret": "终极激光炮塔",
+  "description.mekanism.laser_turret": "激光炮塔，可用于抵御敌对小怪对基地的攻击",
+  "gui.turret.target_hostile": "瞄准敌对生物",
+  "gui.turret.target_passive": "瞄准被动生物",
+  "gui.turret.target_players": "瞄准玩家",
+  "gui.turret.target_trusted": "瞄准信任的玩家",
+  "gui.turret.energy_per_shot": "每次射击的能量: ",
+  "block.mekanism_turrets.electric_fence": "电栅栏",
+  "block.mekanism_turrets.basic_laser_turret": "基础激光炮塔",
+  "block.mekanism_turrets.advanced_laser_turret": "高级激光炮塔",
+  "block.mekanism_turrets.elite_laser_turret": "精英激光炮塔",
+  "block.mekanism_turrets.ultimate_laser_turret": "终极激光炮塔",
+  "item_group.mekanism_turrets": "通用机械炮塔",
+  "death.attack.mekanism_turrets.laser": "%1$s 被激光炮塔蒸发了",
+  "death.attack.mekanism_turrets.electric_fence": "%1$s 被电栅栏电死了"
+}
