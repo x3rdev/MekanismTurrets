@@ -65,7 +65,7 @@ dependencies {
 
     implementation "net.neoforged:neoforge:${neo_version}"
     implementation "mekanism:Mekanism:${minecraft_version}-${mekanism_version}"
-    implementation "software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}"
+    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 
 }
 
@@ -81,7 +81,9 @@ tasks.withType(ProcessResources).configureEach {
             mod_license            : mod_license,
             mod_version            : mod_version,
             mod_authors            : mod_authors,
-            mod_description        : mod_description
+            mod_description        : mod_description,
+            mekanism_version_range : mekanism_version_range,
+            geckolib_version_range : geckolib_version_range
     ]
     inputs.properties replaceProperties
 

@@ -36,8 +36,8 @@ public class MekanismTurrets {
 
         container.registerConfig(ModConfig.Type.COMMON, MekanismTurretsConfig.SPEC);
 
-        neoEventBus.addListener(this::registerCapabilities);
-        neoEventBus.addListener(MekanismTurretsPacketHandler::registerPayloadHandler);
+        modEventBus.addListener(this::registerCapabilities);
+        modEventBus.addListener(MekanismTurretsPacketHandler::registerPayloadHandler);
     }
 
     @SubscribeEvent
