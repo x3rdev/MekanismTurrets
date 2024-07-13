@@ -81,7 +81,7 @@ public class LaserTurretModel extends DefaultedBlockGeoModel<LaserTurretBlockEnt
                 cannon.setRotX(xRot);
                 turret.setRotY(yRot);
             } else {
-                float xRot = lerp(animatable.xRot0, 0);
+                float xRot = lerp(animatable.xRot0, Mth.HALF_PI);
                 float yRot = lerp(animatable.yRot0, 0);
                 animatable.xRot0 = xRot;
                 animatable.yRot0 = yRot;

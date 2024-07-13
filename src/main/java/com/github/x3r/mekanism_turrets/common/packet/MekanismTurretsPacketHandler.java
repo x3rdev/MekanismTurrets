@@ -15,13 +15,10 @@ public final class MekanismTurretsPacketHandler {
     @SubscribeEvent
     public static void registerPayloadHandler(RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
-        registrar.playToClient(
+        registrar.playToServer(
                 ModifyTurretTargetPayload.TYPE,
                 ModifyTurretTargetPayload.STREAM_CODEC,
-                new DirectionalPayloadHandler<>(
-                        (payload, context) -> {},
-                        ModifyTurretTargetPayload::handleServer
-                )
+                ModifyTurretTargetPayload::handleServer
         );
     }
 }

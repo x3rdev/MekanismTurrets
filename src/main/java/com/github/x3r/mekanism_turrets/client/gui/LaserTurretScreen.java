@@ -60,32 +60,32 @@ public class LaserTurretScreen extends GuiMekanismTile<LaserTurretBlockEntity, M
                     PacketDistributor.sendToServer(new ModifyTurretTargetPayload(tile.getBlockPos(), (byte) 0, !tile.targetsHostile()));
                     return true;
                 },
-                Component.literal("target hostile"),
-                Component.literal("stop targeting hostiles")
+                Component.translatable("gui.turret.stop_targeting_hostile"),
+                Component.translatable("gui.turret.start_targeting_hostile")
         ));
         addRenderableWidget(new ToggleButton(this, 40+i, 33, 20, 20, TARGET_PASSIVE_OFF, TARGET_PASSIVE_ON, tile::targetsPassive,
                 (element, mouseX, mouseY) -> {
-                    PacketDistributor.sendToServer(new ModifyTurretTargetPayload(tile.getBlockPos(), (byte) 1, !tile.targetsHostile()));
+                    PacketDistributor.sendToServer(new ModifyTurretTargetPayload(tile.getBlockPos(), (byte) 1, !tile.targetsPassive()));
                     return true;
                 },
-                Component.translatable("gui.turret.target_passive"),
-                Component.translatable("gui.turret.target_players")
+                Component.translatable("gui.turret.stop_targeting_passive"),
+                Component.translatable("gui.turret.start_targeting_passive")
         ));
         addRenderableWidget(new ToggleButton(this, 40+2*i, 33, 20, 20, TARGET_PLAYER_OFF, TARGET_PLAYER_ON, tile::targetsPlayers,
                 (element, mouseX, mouseY) -> {
-                    PacketDistributor.sendToServer(new ModifyTurretTargetPayload(tile.getBlockPos(), (byte) 2, !tile.targetsHostile()));
+                    PacketDistributor.sendToServer(new ModifyTurretTargetPayload(tile.getBlockPos(), (byte) 2, !tile.targetsPlayers()));
                     return true;
                 },
-                Component.translatable("gui.turret.target_players"),
-                Component.translatable("gui.turret.target_players")
+                Component.translatable("gui.turret.stop_targeting_players"),
+                Component.translatable("gui.turret.start_targeting_players")
         ));
         addRenderableWidget(new ToggleButton(this, 40+3*i, 33, 20, 20, TARGET_TRUSTED_OFF, TARGET_TRUSTED_ON, tile::targetsTrusted,
                 (element, mouseX, mouseY) -> {
-                    PacketDistributor.sendToServer(new ModifyTurretTargetPayload(tile.getBlockPos(), (byte) 3, !tile.targetsHostile()));
+                    PacketDistributor.sendToServer(new ModifyTurretTargetPayload(tile.getBlockPos(), (byte) 3, !tile.targetsTrusted()));
                     return true;
                 },
-                Component.translatable("gui.turret.target_trusted"),
-                Component.translatable("gui.turret.target_trusted")
+                Component.translatable("gui.turret.stop_targeting_trusted"),
+                Component.translatable("gui.turret.start_targeting_trusted")
         ){
             @Override
             public void drawBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
