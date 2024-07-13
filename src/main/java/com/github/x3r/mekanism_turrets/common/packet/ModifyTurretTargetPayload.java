@@ -53,6 +53,5 @@ public record ModifyTurretTargetPayload(BlockPos blockEntityPos, byte index, boo
                 turret.tryInvalidateTarget();
             }
         });
-        context.finishCurrentTask(new ConfigurationTask.Type(""));
     }
 }
