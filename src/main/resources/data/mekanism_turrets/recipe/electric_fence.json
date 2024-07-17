@@ -13,11 +13,11 @@
       "item": "minecraft:iron_bars"
     },
     "R": {
-      "tag": "forge:ingots/steel"
+      "tag": "c:ingots/steel"
     }
   },
   "result": {
-    "item": "mekanism_turrets:electric_fence",
+    "id": "mekanism_turrets:electric_fence",
     "count": 1
   }
 }

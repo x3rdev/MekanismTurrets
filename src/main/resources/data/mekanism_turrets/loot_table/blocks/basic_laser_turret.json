@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "mekanism_turrets:elite_laser_turret",
+          "name": "mekanism_turrets:basic_laser_turret",
           "functions": [
             {
               "function": "minecraft:copy_name",
@@ -23,5 +23,5 @@
       ]
     }
   ],
-  "random_sequence": "mekanism_turrets:elite_laser_turret"
+  "random_sequence": "mekanism_turrets:block/basic_laser_turret"
 }

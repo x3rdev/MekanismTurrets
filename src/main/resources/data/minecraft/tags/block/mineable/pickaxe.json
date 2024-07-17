@@ -1,0 +1,9 @@
+{
+  "values":[
+    "mekanism_turrets:electric_fence",
+    "mekanism_turrets:basic_laser_turret",
+    "mekanism_turrets:advanced_laser_turret",
+    "mekanism_turrets:elite_laser_turret",
+    "mekanism_turrets:ultimate_laser_turret"
+  ]
+}

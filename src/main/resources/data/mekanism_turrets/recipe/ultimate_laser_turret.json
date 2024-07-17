@@ -7,23 +7,23 @@
   ],
   "key": {
     "#": {
-      "item": "mekanism:alloy_reinforced"
+      "item": "mekanism:alloy_atomic"
     },
     "B": {
-      "item": "mekanism:elite_control_circuit"
+      "item": "mekanism:ultimate_control_circuit"
     },
     "O": {
-      "item": "mekanism_turrets:advanced_laser_turret"
+      "item": "mekanism_turrets:elite_laser_turret"
     },
     "R": {
-      "tag": "forge:ingots/steel"
+      "tag": "c:ingots/steel"
     },
     "T": {
       "item": "mekanism:energy_tablet"
     }
   },
   "result": {
-    "item": "mekanism_turrets:elite_laser_turret",
+    "id": "mekanism_turrets:ultimate_laser_turret",
     "count": 1
   }
 }
