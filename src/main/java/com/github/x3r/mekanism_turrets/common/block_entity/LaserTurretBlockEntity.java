@@ -143,11 +143,10 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         energySlot.fillContainerOrConvert();
         tryInvalidateTarget();
         tryFindTarget();
+        setAnimData(HAS_TARGET, target != null);
         energyContainer.setEnergyPerTick(FloatingLong.create(laserShotEnergy()));
         if(target != null) {
-            setAnimData(TARGET_POS_X, target.getX());
-            setAnimData(TARGET_POS_Y, target.getY() + target.getBoundingBox().getYsize()/2);
-            setAnimData(TARGET_POS_Z, target.getZ());
+            updateTargetLocation();
             if(coolDown == 0) {
                 coolDown = Math.max(0, tier.getCooldown()-(2*upgradeComponent.getUpgrades(Upgrade.SPEED)));
                 if(energyContainer.getEnergy().greaterOrEqual(FloatingLong.create(laserShotEnergy()))) {
@@ -162,22 +161,34 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         }
     }
 
-    private void shootLaser() {
-        if(target != null) {
-            int mufflerCount = getComponent().getUpgrades(Upgrade.MUFFLING);
-            float volume = 1.0F - (mufflerCount / (float) Upgrade.MUFFLING.getMax());
-            level.playSound(null, getBlockPos(), SoundRegistry.TURRET_SHOOT.get(), SoundSource.BLOCKS, volume, 1.0F);
-
-            triggerAnim("controller", "shoot");
-
-            float mobHeight = target.getBbHeight();
-            Vec3 center = getBlockPos().getCenter();
-            Vec3 lookVec = center.vectorTo(target.position().add(0, mobHeight/2, 0)).normalize().scale(0.75F);
-            LaserEntity laser = new LaserEntity(level, center.add(lookVec), tier.getDamage());
-            laser.setDeltaMovement(lookVec.scale(2.25F));
-            level.addFreshEntity(laser);
-            energyContainer.extract(FloatingLong.create(laserShotEnergy()), Action.EXECUTE, AutomationType.INTERNAL);
+    private void updateTargetLocation() {
+        Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBoundingBox().getYsize()/1.75, target.getZ());
+        double laserSpeed = 0.75F*3F; //Laser speed is constant
+        for (int i = 0; i < 21; i++) { //Tries to predict the path of the entity one second into the future
+            Vec3 nextPos = targetPos.add(target.getDeltaMovement().scale(i));
+            if(nextPos.length() <= laserSpeed*i || i == 20) {
+                setAnimData(TARGET_POS_X, nextPos.x);
+                setAnimData(TARGET_POS_Y, nextPos.y);
+                setAnimData(TARGET_POS_Z, nextPos.z);
+                return;
+            }
         }
+    }
+
+    private void shootLaser() {
+        int mufflerCount = getComponent().getUpgrades(Upgrade.MUFFLING);
+        float volume = 1.0F - (mufflerCount / (float) Upgrade.MUFFLING.getMax());
+        level.playSound(null, getBlockPos(), SoundRegistry.TURRET_SHOOT.get(), SoundSource.BLOCKS, volume, 1.0F);
+
+        triggerAnim("controller", "shoot");
+
+        float mobHeight = target.getBbHeight();
+        Vec3 center = getBlockPos().getCenter();
+        Vec3 lookVec = center.vectorTo(target.position().add(0, mobHeight/2, 0)).normalize().scale(0.75F);
+        LaserEntity laser = new LaserEntity(level, center.add(lookVec), tier.getDamage());
+        laser.setDeltaMovement(lookVec.scale(3F));
+        level.addFreshEntity(laser);
+        energyContainer.extract(FloatingLong.create(laserShotEnergy()), Action.EXECUTE, AutomationType.INTERNAL);
     }
 
     private int laserShotEnergy() {
@@ -185,7 +196,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     public void tryInvalidateTarget() {
-        if(target != null && !isValidTarget(target)) {
+        if(!isValidTarget(target)) {
             setAnimData(HAS_TARGET, false);
             target = null;
         }
@@ -205,6 +216,9 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     private boolean isValidTarget(LivingEntity e) {
+        if(e == null) {
+            return false;
+        }
         if(!e.canBeSeenAsEnemy()) {
             return false;
         }
@@ -294,6 +308,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         tag.putBoolean("targetsPassive", targetsPassive);
         tag.putBoolean("targetsPlayers", targetsPlayers);
         tag.putBoolean("targetsTrusted", targetsTrusted);
+        tag.putBoolean("hasTarget", target != null);
     }
 
     @Override
@@ -303,6 +318,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         NBTUtils.setBooleanIfPresent(tag, "targetsPassive", value -> targetsPassive = value);
         NBTUtils.setBooleanIfPresent(tag, "targetsPlayers", value -> targetsPlayers = value);
         NBTUtils.setBooleanIfPresent(tag, "targetsTrusted", value -> targetsTrusted = value);
+        NBTUtils.setBooleanIfPresent(tag, "hasTarget", value -> setAnimData(HAS_TARGET, value));
     }
 
     @Override

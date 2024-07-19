@@ -92,7 +92,7 @@ public class LaserTurretBlock extends BlockTile.BlockTileModel<LaserTurretBlockE
     }
 
     @Override
-    public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull CollisionContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         switch (state.getValue(FACING)) {
             case NORTH -> {
                 if(SHAPE_NORTH == null) {
@@ -173,6 +173,11 @@ public class LaserTurretBlock extends BlockTile.BlockTileModel<LaserTurretBlockE
                 return SHAPE_DOWN;
             }
         }
+        return Shapes.block();
+    }
+
+        @Override
+    public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         return Shapes.block();
     }
 
