@@ -69,7 +69,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private LaserTurretTier tier;
     private MachineEnergyContainer<LaserTurretBlockEntity> energyContainer;
-    private boolean targetsHostile = false;
+    private boolean targetsHostile = true;
     private boolean targetsPassive = false;
     private boolean targetsPlayers = false;
     private boolean targetsTrusted = true;
