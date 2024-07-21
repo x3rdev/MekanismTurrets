@@ -18,20 +18,22 @@ public class MekanismTurretsConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec SPEC;
 
-    public static ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistedEntities;
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistedEntities;
 
-    public static ForgeConfigSpec.IntValue basicLaserTurretCooldown;
-    public static ForgeConfigSpec.DoubleValue basicLaserTurretDamage;
-    public static ForgeConfigSpec.IntValue basicLaserTurretEnergyCapacity;
-    public static ForgeConfigSpec.IntValue advancedLaserTurretCooldown;
-    public static ForgeConfigSpec.DoubleValue advancedLaserTurretDamage;
-    public static ForgeConfigSpec.IntValue advancedLaserTurretEnergyCapacity;
-    public static ForgeConfigSpec.IntValue eliteLaserTurretCooldown;
-    public static ForgeConfigSpec.DoubleValue eliteLaserTurretDamage;
-    public static ForgeConfigSpec.IntValue eliteLaserTurretEnergyCapacity;
-    public static ForgeConfigSpec.IntValue ultimateLaserTurretCooldown;
-    public static ForgeConfigSpec.DoubleValue ultimateLaserTurretDamage;
-    public static ForgeConfigSpec.IntValue ultimateLaserTurretEnergyCapacity;
+    public static final ForgeConfigSpec.DoubleValue laserTurretRange;
+
+    public static final ForgeConfigSpec.IntValue basicLaserTurretCooldown;
+    public static final ForgeConfigSpec.DoubleValue basicLaserTurretDamage;
+    public static final ForgeConfigSpec.IntValue basicLaserTurretEnergyCapacity;
+    public static final ForgeConfigSpec.IntValue advancedLaserTurretCooldown;
+    public static final ForgeConfigSpec.DoubleValue advancedLaserTurretDamage;
+    public static final ForgeConfigSpec.IntValue advancedLaserTurretEnergyCapacity;
+    public static final ForgeConfigSpec.IntValue eliteLaserTurretCooldown;
+    public static final ForgeConfigSpec.DoubleValue eliteLaserTurretDamage;
+    public static final ForgeConfigSpec.IntValue eliteLaserTurretEnergyCapacity;
+    public static final ForgeConfigSpec.IntValue ultimateLaserTurretCooldown;
+    public static final ForgeConfigSpec.DoubleValue ultimateLaserTurretDamage;
+    public static final ForgeConfigSpec.IntValue ultimateLaserTurretEnergyCapacity;
 
 
     static  {
@@ -42,6 +44,8 @@ public class MekanismTurretsConfig {
                 ForgeRegistries.ENTITY_TYPES.getKey(EntityType.IRON_GOLEM).toString()
         );
         blacklistedEntities = BUILDER.comment("Entities which will never be targeted by turrets").defineListAllowEmpty("blacklistedEntities", defaultBlacklistedEntities, MekanismTurretsConfig::isEntityId);
+
+        laserTurretRange = BUILDER.comment("Range of the Laser Turrets").defineInRange("laserTurretRange", 32D, 0D, 1000);
 
         basicLaserTurretCooldown = BUILDER.comment("Cooldown of the Basic Laser Turret").defineInRange("basicLaserTurretCooldown", 80, 0, Integer.MAX_VALUE);
         basicLaserTurretDamage = BUILDER.comment("Damage of the Basic Laser Turret").defineInRange("basicLaserTurretDamage", 1F, 0F, Float.MAX_VALUE);

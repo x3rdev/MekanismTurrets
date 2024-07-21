@@ -53,6 +53,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 
 public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlockEntity {
@@ -64,8 +65,8 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     public static final SerializableDataTicket<Double> TARGET_POS_Y = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_y")));
     public static final SerializableDataTicket<Double> TARGET_POS_Z = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_z")));
     private static final RawAnimation SHOOT_ANIMATION = RawAnimation.begin().then("shoot", Animation.LoopType.PLAY_ONCE);
-    private static final float MAX_RANGE = 20;
-    private final AABB targetBox = AABB.ofSize(getBlockPos().getCenter(), MAX_RANGE, MAX_RANGE, MAX_RANGE);
+    private static final Supplier<Double> MAX_RANGE = MekanismTurretsConfig.laserTurretRange;
+    private final AABB targetBox = AABB.ofSize(getBlockPos().getCenter(), MAX_RANGE.get(), MAX_RANGE.get(), MAX_RANGE.get());
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private LaserTurretTier tier;
     private MachineEnergyContainer<LaserTurretBlockEntity> energyContainer;
@@ -176,19 +177,21 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     private void shootLaser() {
-        int mufflerCount = getComponent().getUpgrades(Upgrade.MUFFLING);
-        float volume = 1.0F - (mufflerCount / (float) Upgrade.MUFFLING.getMax());
-        level.playSound(null, getBlockPos(), SoundRegistry.TURRET_SHOOT.get(), SoundSource.BLOCKS, volume, 1.0F);
+        if(target != null) { // Needed for scheduled shot
+            int mufflerCount = getComponent().getUpgrades(Upgrade.MUFFLING);
+            float volume = 1.0F - (mufflerCount / (float) Upgrade.MUFFLING.getMax());
+            level.playSound(null, getBlockPos(), SoundRegistry.TURRET_SHOOT.get(), SoundSource.BLOCKS, volume, 1.0F);
 
-        triggerAnim("controller", "shoot");
+            triggerAnim("controller", "shoot");
 
-        float mobHeight = target.getBbHeight();
-        Vec3 center = getBlockPos().getCenter();
-        Vec3 lookVec = center.vectorTo(target.position().add(0, mobHeight/2, 0)).normalize().scale(0.75F);
-        LaserEntity laser = new LaserEntity(level, center.add(lookVec), tier.getDamage());
-        laser.setDeltaMovement(lookVec.scale(3F));
-        level.addFreshEntity(laser);
-        energyContainer.extract(FloatingLong.create(laserShotEnergy()), Action.EXECUTE, AutomationType.INTERNAL);
+            float mobHeight = target.getBbHeight();
+            Vec3 center = getBlockPos().getCenter();
+            Vec3 lookVec = center.vectorTo(target.position().add(0, mobHeight / 2, 0)).normalize().scale(0.75F);
+            LaserEntity laser = new LaserEntity(level, center.add(lookVec), tier.getDamage());
+            laser.setDeltaMovement(lookVec.scale(3F));
+            level.addFreshEntity(laser);
+            energyContainer.extract(FloatingLong.create(laserShotEnergy()), Action.EXECUTE, AutomationType.INTERNAL);
+        }
     }
 
     private int laserShotEnergy() {
@@ -222,7 +225,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         if(!e.canBeSeenAsEnemy()) {
             return false;
         }
-        if(e.distanceToSqr(this.getBlockPos().getCenter()) > MAX_RANGE*MAX_RANGE) {
+        if(e.distanceToSqr(this.getBlockPos().getCenter()) > MAX_RANGE.get()*MAX_RANGE.get()) {
             return false;
         }
         if(MekanismTurretsConfig.blacklistedEntities.get().stream().map(s -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(s))).anyMatch(entityType -> e.getType().equals(entityType))) {
