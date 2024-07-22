@@ -1,5 +1,6 @@
 package com.github.x3r.mekanism_turrets.common.entity;
 
+import com.github.x3r.mekanism_turrets.common.block.LaserTurretBlock;
 import com.github.x3r.mekanism_turrets.common.registry.DamageTypeRegistry;
 import com.github.x3r.mekanism_turrets.common.registry.EntityRegistry;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -7,6 +8,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -35,13 +37,14 @@ public class LaserEntity extends Projectile {
     @Override
     public void tick() {
         super.tick();
-        HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-        if(hitresult.getType().equals(HitResult.Type.BLOCK)) {
-            this.onHitBlock((BlockHitResult) hitresult);
-        } else if(hitresult.getType().equals(HitResult.Type.ENTITY)) {
-            this.onHitEntity((EntityHitResult) hitresult);
-        }
         if(!level().isClientSide()) {
+            HitResult hitResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+            if(hitResult.getType().equals(HitResult.Type.BLOCK)) {
+                onHitBlock((BlockHitResult) hitResult);
+            }
+            level().getEntities(this, getBoundingBox().inflate(0.5)).forEach(entity -> {
+                entity.hurt(new DamageTypeRegistry(level().registryAccess()).laser(), (float) this.damage);
+            });
             lifeTime++;
             if (lifeTime > 10 * 20) {
                 this.discard();
@@ -61,7 +64,8 @@ public class LaserEntity extends Projectile {
     @Override
     protected void onHitBlock(BlockHitResult pResult) {
         super.onHitBlock(pResult);
-        if(!level().isClientSide() && level().getBlockState(pResult.getBlockPos()).isCollisionShapeFullBlock(level(), pResult.getBlockPos())) {
+        BlockState state = (level().getBlockState(pResult.getBlockPos()));
+        if(!(state.getBlock() instanceof LaserTurretBlock) && state.isCollisionShapeFullBlock(level(), pResult.getBlockPos())) {
             this.discard();
         }
     }

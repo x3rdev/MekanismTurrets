@@ -59,7 +59,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     public static final SerializableDataTicket<Double> TARGET_POS_Y = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "target_pos_y")));
     public static final SerializableDataTicket<Double> TARGET_POS_Z = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "target_pos_z")));
     private static final RawAnimation SHOOT_ANIMATION = RawAnimation.begin().then("shoot", Animation.LoopType.PLAY_ONCE);
-    private final AABB targetBox = AABB.ofSize(getBlockPos().getCenter(), getTier().getRange(), getTier().getRange(), getTier().getRange());
+    private final AABB targetBox = AABB.ofSize(getBlockPos().getCenter(), getTier().getRange()*2, getTier().getRange()*2, getTier().getRange()*2);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private LaserTurretTier tier;
     private MachineEnergyContainer<LaserTurretBlockEntity> energyContainer;
@@ -138,7 +138,10 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         tryFindTarget();
         energyContainer.setEnergyPerTick(laserShotEnergy());
         if(target != null) {
-            updateTargetLocation();
+            Vec3 targetPos = getShootLocation(target);
+            setAnimData(TARGET_POS_X, targetPos.x);
+            setAnimData(TARGET_POS_Y, targetPos.y);
+            setAnimData(TARGET_POS_Z, targetPos.z);
             if(coolDown == 0) {
                 coolDown = Math.max(0, tier.getCooldown()-(2*upgradeComponent.getUpgrades(Upgrade.SPEED)));
                 if(energyContainer.getEnergy() >= laserShotEnergy()) {
@@ -154,18 +157,17 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         return super.onUpdateServer();
     }
 
-    private void updateTargetLocation() {
-        Vec3 targetPos = new Vec3(target.getX(), target.getY() + target.getBoundingBox().getYsize()/1.75, target.getZ());
+    private static Vec3 getShootLocation(LivingEntity entity) {
+        Vec3 targetPos = new Vec3(entity.getX(), entity.getY(), entity.getZ());
         double laserSpeed = 0.75F*3F; //Laser speed is constant
-        for (int i = 0; i < 21; i++) { //Tries to predict the path of the entity one second into the future
-            Vec3 nextPos = targetPos.add(target.getDeltaMovement().scale(i));
+        for (int i = 1; i < 21; i++) { //Tries to predict the path of the entity one second into the future
+            Vec3 deltaMovement = entity.getDeltaMovement().multiply(0.95, 0, 0.95);
+            Vec3 nextPos = targetPos.add(deltaMovement.scale(i-1));
             if(nextPos.length() <= laserSpeed*i || i == 20) {
-                setAnimData(TARGET_POS_X, nextPos.x);
-                setAnimData(TARGET_POS_Y, nextPos.y);
-                setAnimData(TARGET_POS_Z, nextPos.z);
-                return;
+                return new Vec3(nextPos.x, nextPos.y+(entity.getBbHeight()*0.75), nextPos.z);
             }
         }
+        return targetPos;
     }
 
     private void shootLaser() {
@@ -176,11 +178,10 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
 
             triggerAnim("controller", "shoot");
 
-            float mobHeight = target.getBbHeight();
             Vec3 center = getBlockPos().getCenter();
-            Vec3 lookVec = center.vectorTo(target.position().add(0, mobHeight / 2, 0)).normalize().scale(0.75F);
-            LaserEntity laser = new LaserEntity(level, center.add(lookVec), tier.getDamage());
-            laser.setDeltaMovement(lookVec.scale(2.25F));
+            Vec3 targetPos = getShootLocation(target);
+            LaserEntity laser = new LaserEntity(level, center.add(0, -0.15, 0), tier.getDamage());
+            laser.setDeltaMovement(center.vectorTo(targetPos).normalize().scale(2.25F));
             level.addFreshEntity(laser);
             energyContainer.extract(laserShotEnergy(), Action.EXECUTE, AutomationType.INTERNAL);
         }
@@ -268,9 +269,9 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     private boolean canSeeTarget(LivingEntity e) {
         float mobHeight = e.getBbHeight();
         Vec3 center = getBlockPos().getCenter();
-        Vec3 targetCenter = e.position().add(0, mobHeight/2, 0);
-        Vec3 lookVec = center.vectorTo(targetCenter).normalize().scale(0.75F);
-        ClipContext ctx = new ClipContext(center.add(lookVec), targetCenter, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
+        Vec3 targetPos = e.position().add(0, (e.getBbHeight()*0.75), 0);
+        Vec3 lookVec = center.vectorTo(targetPos).normalize().scale(0.75F);
+        ClipContext ctx = new ClipContext(center.add(lookVec), targetPos, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, CollisionContext.empty());
         return level.clip(ctx).getType().equals(HitResult.Type.MISS);
     }
 
