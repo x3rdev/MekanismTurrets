@@ -58,8 +58,6 @@ public class LaserTurretBlock extends BlockTile.BlockTileModel<LaserTurretBlockE
         builder.add(FACING);
     }
 
-
-
     public BlockState rotate(BlockState pState, Rotation pRot) {
         return pState.setValue(FACING, pRot.rotate(pState.getValue(FACING)));
     }
