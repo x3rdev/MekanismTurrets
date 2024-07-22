@@ -6,7 +6,6 @@ import com.github.x3r.mekanism_turrets.common.entity.LaserEntity;
 import com.github.x3r.mekanism_turrets.common.registry.SoundRegistry;
 import com.github.x3r.mekanism_turrets.common.scheduler.Scheduler;
 import mekanism.api.*;
-import mekanism.api.math.FloatingLong;
 import mekanism.api.providers.IBlockProvider;
 import mekanism.common.block.attribute.Attribute;
 import mekanism.common.capabilities.energy.MachineEnergyContainer;
@@ -137,12 +136,12 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         energySlot.fillContainerOrConvert();
         tryInvalidateTarget();
         tryFindTarget();
-        energyContainer.setEnergyPerTick(FloatingLong.create(laserShotEnergy()));
+        energyContainer.setEnergyPerTick(laserShotEnergy());
         if(target != null) {
             updateTargetLocation();
             if(coolDown == 0) {
                 coolDown = Math.max(0, tier.getCooldown()-(2*upgradeComponent.getUpgrades(Upgrade.SPEED)));
-                if(energyContainer.getEnergy().greaterOrEqual(FloatingLong.create(laserShotEnergy()))) {
+                if(energyContainer.getEnergy() >= laserShotEnergy()) {
                     shootLaser();
                     if(tier.equals(LaserTurretTier.ULTIMATE)) {
                         Scheduler.schedule(this::shootLaser, 10);
@@ -183,7 +182,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             LaserEntity laser = new LaserEntity(level, center.add(lookVec), tier.getDamage());
             laser.setDeltaMovement(lookVec.scale(2.25F));
             level.addFreshEntity(laser);
-            energyContainer.extract(FloatingLong.create(laserShotEnergy()), Action.EXECUTE, AutomationType.INTERNAL);
+            energyContainer.extract(laserShotEnergy(), Action.EXECUTE, AutomationType.INTERNAL);
         }
     }
 

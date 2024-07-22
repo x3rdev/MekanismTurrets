@@ -1,19 +1,14 @@
 package com.github.x3r.mekanism_turrets.common.registry;
 
-import com.github.x3r.mekanism_turrets.common.block.LaserTurretBlock;
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretBlockEntity;
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretTier;
 import com.github.x3r.mekanism_turrets.common.lang.MekanismTurretsLang;
 import mekanism.api.Upgrade;
-import mekanism.api.math.FloatingLong;
 import mekanism.common.block.attribute.*;
 import mekanism.common.content.blocktype.BlockTypeTile;
 import mekanism.common.registration.impl.BlockRegistryObject;
 import mekanism.common.registration.impl.TileEntityTypeRegistryObject;
-import mekanism.common.util.EnumUtils;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.EnumSet;
 import java.util.function.Supplier;
 
 public class BlockTypeRegistry {
@@ -27,8 +22,7 @@ public class BlockTypeRegistry {
                 .withGui(() -> ContainerTypeRegistry.LASER_TURRET)
                 .with(new AttributeTier<>(tier), new AttributeUpgradeable(upgradeBlock), Attributes.SECURITY)
                 .without(AttributeParticleFX.class, AttributeStateFacing.class, Attributes.AttributeRedstone.class)
-                .withEnergyConfig(
-                        () -> FloatingLong.create(tier.getEnergyCapacity()))
+                .withEnergyConfig(tier::getEnergyCapacity)
                 .withSupportedUpgrades(Upgrade.SPEED, Upgrade.ENERGY, Upgrade.MUFFLING)
                 .withComputerSupport(tier, "LaserTurret")
                 .build();

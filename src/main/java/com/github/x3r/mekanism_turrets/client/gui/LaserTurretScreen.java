@@ -3,7 +3,6 @@ package com.github.x3r.mekanism_turrets.client.gui;
 import com.github.x3r.mekanism_turrets.MekanismTurrets;
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretBlockEntity;
 import com.github.x3r.mekanism_turrets.common.packet.ModifyTurretTargetPayload;
-import mekanism.api.math.FloatingLong;
 import mekanism.client.gui.GuiMekanismTile;
 import mekanism.client.gui.element.bar.GuiVerticalPowerBar;
 import mekanism.client.gui.element.button.ToggleButton;
@@ -46,13 +45,13 @@ public class LaserTurretScreen extends GuiMekanismTile<LaserTurretBlockEntity, M
         addRenderableWidget(new GuiVerticalPowerBar(this, tile.getEnergyContainer(), 164, 15))
                 .warning(WarningTracker.WarningType.NOT_ENOUGH_ENERGY, () -> {
                     MachineEnergyContainer<LaserTurretBlockEntity> energyContainer = tile.getEnergyContainer();
-                    return energyContainer.getEnergyPerTick().greaterThan(energyContainer.getEnergy());
+                    return energyContainer.getEnergyPerTick() > energyContainer.getEnergy();
                 });
-        FloatingLong energyPerTick = tile.getEnergyContainer().getEnergyPerTick();
+        long energyPerTick = tile.getEnergyContainer().getEnergyPerTick();
         addRenderableWidget(new GuiEnergyTab(this, () -> List.of(
                 Component.translatable("gui.turret.energy_per_shot").append(EnergyDisplay.of(energyPerTick).getTextComponent()),
-                MekanismLang.NEEDED.translate(EnergyDisplay.of(energyPerTick.subtract(tile.getEnergyContainer().getEnergy())))
-        )));
+                MekanismLang.NEEDED.translate(EnergyDisplay.of(energyPerTick - tile.getEnergyContainer().getEnergy())))
+        ));
         int i = 25;
         //Component.translatable("gui.turret.target_hostile")
         addRenderableWidget(new ToggleButton(this, 40, 33, 20, 20, TARGET_HOSTILE_OFF, TARGET_HOSTILE_ON, tile::targetsHostile,
