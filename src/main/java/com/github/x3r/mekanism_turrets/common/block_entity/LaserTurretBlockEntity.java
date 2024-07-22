@@ -227,6 +227,9 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         if(e.distanceToSqr(this.getBlockPos().getCenter()) > getTier().getRange()*getTier().getRange()) {
             return false;
         }
+        if(MekanismTurretsConfig.blacklistedEntities == null) {
+            return false;
+        }
         if(MekanismTurretsConfig.blacklistedEntities.get().stream().map(s -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(s))).anyMatch(entityType -> e.getType().equals(entityType))) {
             return false;
         }
