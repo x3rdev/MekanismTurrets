@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "mekanism_turrets:elite_laser_turret",
+          "name": "mekanism_turrets:ultimate_laser_turret",
           "functions": [
             {
               "function": "minecraft:copy_name",

@@ -6,6 +6,8 @@ import mekanism.api.tier.ITier;
 import mekanism.common.config.value.CachedFloatValue;
 import mekanism.common.config.value.CachedIntValue;
 
+import java.util.function.Supplier;
+
 public enum LaserTurretTier implements ITier {
     BASIC(BaseTier.BASIC, 80, 1, 10000, 15),
     ADVANCED(BaseTier.ADVANCED, 65, 2, 40000, 25),
@@ -65,11 +67,11 @@ public enum LaserTurretTier implements ITier {
         return range;
     }
 
-    public void setConfigReference(int cooldownReference, double damageReference, int energyCapacityReference, double rangeReference) {
-        this.cooldownReference = cooldownReference;
-        this.damageReference = damageReference;
-        this.energyCapacityReference = energyCapacityReference;
-        this.rangeReference = rangeReference;
+    public void setConfigReference(Supplier<Integer> cooldownReference, Supplier<Double> damageReference, Supplier<Integer> energyCapacityReference, Supplier<Double> rangeReference) {
+        this.cooldownReference = cooldownReference.get();
+        this.damageReference = damageReference.get();
+        this.energyCapacityReference = energyCapacityReference.get();
+        this.rangeReference = rangeReference.get();
     }
 
 }
