@@ -60,8 +60,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     public static final SerializableDataTicket<Double> TARGET_POS_Y = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "target_pos_y")));
     public static final SerializableDataTicket<Double> TARGET_POS_Z = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "target_pos_z")));
     private static final RawAnimation SHOOT_ANIMATION = RawAnimation.begin().then("shoot", Animation.LoopType.PLAY_ONCE);
-    private static final Supplier<Double> MAX_RANGE = MekanismTurretsConfig.laserTurretRange;
-    private final AABB targetBox = AABB.ofSize(getBlockPos().getCenter(), MAX_RANGE.get(), MAX_RANGE.get(), MAX_RANGE.get());
+    private final AABB targetBox = AABB.ofSize(getBlockPos().getCenter(), getTier().getRange(), getTier().getRange(), getTier().getRange());
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private LaserTurretTier tier;
     private MachineEnergyContainer<LaserTurretBlockEntity> energyContainer;
@@ -121,16 +120,16 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         return targetsPlayers;
     }
 
+    public void setTargetsPlayers(boolean targetsPlayers) {
+        this.targetsPlayers = targetsPlayers;
+    }
+
     public boolean targetsTrusted() {
         return targetsTrusted;
     }
 
     public void setTargetsTrusted(boolean targetsTrusted) {
         this.targetsTrusted = targetsTrusted;
-    }
-
-    public void setTargetsPlayers(boolean targetsPlayers) {
-        this.targetsPlayers = targetsPlayers;
     }
 
     @Override
@@ -219,7 +218,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         if(!e.canBeSeenAsEnemy()) {
             return false;
         }
-        if(e.distanceToSqr(this.getBlockPos().getCenter()) > MAX_RANGE.get()*MAX_RANGE.get()) {
+        if(e.distanceToSqr(this.getBlockPos().getCenter()) > getTier().getRange()*getTier().getRange()) {
             return false;
         }
         if(MekanismTurretsConfig.blacklistedEntities.get().stream().map(s -> BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(s))).anyMatch(entityType -> e.getType().equals(entityType))) {
