@@ -267,7 +267,6 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     private boolean canSeeTarget(LivingEntity e) {
-        float mobHeight = e.getBbHeight();
         Vec3 center = getBlockPos().getCenter();
         Vec3 targetPos = e.position().add(0, (e.getBbHeight()*0.75), 0);
         Vec3 lookVec = center.vectorTo(targetPos).normalize().scale(0.75F);
