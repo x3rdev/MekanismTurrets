@@ -313,7 +313,6 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         tag.putBoolean("targetsPassive", targetsPassive);
         tag.putBoolean("targetsPlayers", targetsPlayers);
         tag.putBoolean("targetsTrusted", targetsTrusted);
-        tag.putBoolean("hasTarget", target != null);
     }
 
     @Override
@@ -323,7 +322,6 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         NBTUtils.setBooleanIfPresent(tag, "targetsPassive", value -> targetsPassive = value);
         NBTUtils.setBooleanIfPresent(tag, "targetsPlayers", value -> targetsPlayers = value);
         NBTUtils.setBooleanIfPresent(tag, "targetsTrusted", value -> targetsTrusted = value);
-        NBTUtils.setBooleanIfPresent(tag, "hasTarget", value -> setAnimData(HAS_TARGET, value));
     }
 
     @Override
