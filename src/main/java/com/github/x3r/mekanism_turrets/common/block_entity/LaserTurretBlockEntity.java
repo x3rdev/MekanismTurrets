@@ -59,10 +59,10 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
 
     @WrappingComputerMethod(wrapper = SpecialComputerMethodWrapper.ComputerIInventorySlotWrapper.class, methodNames = "getEnergyItem", docPlaceholder = "energy slot")
     EnergyInventorySlot energySlot;
-    public static final SerializableDataTicket<Boolean> HAS_TARGET = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofBoolean(new ResourceLocation(MekanismTurrets.MOD_ID, "has_target")));
-    public static final SerializableDataTicket<Double> TARGET_POS_X = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_x")));
-    public static final SerializableDataTicket<Double> TARGET_POS_Y = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_y")));
-    public static final SerializableDataTicket<Double> TARGET_POS_Z = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofDouble(new ResourceLocation(MekanismTurrets.MOD_ID, "target_pos_z")));
+    public static SerializableDataTicket<Boolean> HAS_TARGET;
+    public static SerializableDataTicket<Double> TARGET_POS_X;
+    public static SerializableDataTicket<Double> TARGET_POS_Y;
+    public static SerializableDataTicket<Double> TARGET_POS_Z;
     private static final RawAnimation SHOOT_ANIMATION = RawAnimation.begin().then("shoot", Animation.LoopType.PLAY_ONCE);
     private final AABB targetBox = AABB.ofSize(getBlockPos().getCenter(), getTier().getRange()*2, getTier().getRange()*2, getTier().getRange()*2);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -142,13 +142,13 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         energySlot.fillContainerOrConvert();
         tryInvalidateTarget();
         tryFindTarget();
-        setAnimData(HAS_TARGET, target != null);
         energyContainer.setEnergyPerTick(FloatingLong.create(laserShotEnergy()));
         if(target != null) {
             Vec3 targetPos = getShootLocation(target);
             setAnimData(TARGET_POS_X, targetPos.x);
             setAnimData(TARGET_POS_Y, targetPos.y);
             setAnimData(TARGET_POS_Z, targetPos.z);
+            setAnimData(HAS_TARGET, target != null);
             if(coolDown == 0) {
                 coolDown = Math.max(0, tier.getCooldown()-(2*upgradeComponent.getUpgrades(Upgrade.SPEED)));
                 if(energyContainer.getEnergy().greaterOrEqual(FloatingLong.create(laserShotEnergy()))) {

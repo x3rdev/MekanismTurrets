@@ -40,7 +40,7 @@ public class ModifyTurretTargetPacket {
         context.get().enqueueWork(() -> {
             ServerPlayer player = context.get().getSender();
             BlockEntity be = player.level().getBlockEntity(blockEntityPos);
-            if(be instanceof LaserTurretBlockEntity turret) {
+            if (be instanceof LaserTurretBlockEntity turret) {
                 switch (index) {
                     case 0 -> turret.setTargetsHostile(value);
                     case 1 -> turret.setTargetsPassive(value);

@@ -22,12 +22,12 @@ description='''${mod_description}'''
 [[dependencies.${mod_id}]]
    modId="mekanism"
    mandatory=true
-   versionRange="10.4.5.19"
+   versionRange="${mekanism_version_range}"
    ordering="NONE"
    side="BOTH"
 [[dependencies.${mod_id}]]
    modId="geckolib"
    mandatory=true
-   versionRange="4.4.4"
+   versionRange="${geckolib_version_range}"
    ordering="NONE"
    side="BOTH"
