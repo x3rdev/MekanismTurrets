@@ -33,6 +33,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -71,6 +72,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     public float xRot0 = 0;
     public float yRot0 = 0;
     private int coolDown = 0;
+    private int idleTicks = 0;
 
     public LaserTurretBlockEntity(IBlockProvider blockProvider, BlockPos pos, BlockState state) {
         super(blockProvider, pos, state);
@@ -200,15 +202,21 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     private void tryFindTarget() {
-        if(target == null) {
-            List<LivingEntity> livingEntityList = level.getEntities(null, targetBox).stream().filter(LivingEntity.class::isInstance).map(LivingEntity.class::cast).toList();
-            Optional<LivingEntity> optional = livingEntityList.stream()
-                    .sorted((o1, o2) -> Double.compare(o1.distanceToSqr(this.getBlockPos().getCenter()), o2.distanceToSqr(this.getBlockPos().getCenter())))
-                    .filter(this::isValidTarget).findFirst();
-            optional.ifPresent(livingEntity -> {
-                this.target = livingEntity;
+        if(idleTicks-- > 0) {
+            return;
+        }
+        if(target == null && (level.getGameTime()+this.hashCode()) % 3 == 0) {
+            Optional<LivingEntity> optional = level.getEntitiesOfClass(LivingEntity.class, targetBox, this::isValidTarget).stream()
+                    .min((o1, o2) -> Double.compare(
+                            o1.distanceToSqr(this.getBlockPos().getCenter()),
+                            o2.distanceToSqr(this.getBlockPos().getCenter())
+                    ));
+            if(optional.isPresent()) {
+                this.target = optional.get();
                 setAnimData(HAS_TARGET, true);
-            });
+            } else {
+                idleTicks = 20 * 4;
+            }
         }
     }
 
