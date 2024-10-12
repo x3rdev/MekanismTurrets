@@ -16,6 +16,7 @@ public class EntityRegistry {
     public static final RegistryObject<EntityType<LaserEntity>> LASER = ENTITY_TYPES.register("laser",
             () -> EntityType.Builder.<LaserEntity>of(LaserEntity::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F)
+                    .noSave()
                     .clientTrackingRange(4)
                     .updateInterval(10)
                     .build(new ResourceLocation(MekanismTurrets.MOD_ID, "laser").toString()));
