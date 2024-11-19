@@ -1,0 +1,20 @@
+{
+  "container.mekanism_turrets.basic_laser_turret": "Базовая лазерная турель",
+  "container.mekanism_turrets.advanced_laser_turret": "Продвинутая лазерная турель",
+  "container.mekanism_turrets.elite_laser_turret": "Элитная лазерная турель",
+  "container.mekanism_turrets.ultimate_laser_turret": "Совершенная лазерная турель",
+  "description.mekanism.laser_turret": "Лазерная турель, которую можно использовать для защиты вашей базы от враждебных мобов.",
+  "gui.turret.target_hostile": "Цель: Враждебные существа",
+  "gui.turret.target_passive": "Цель: Мирные существа",
+  "gui.turret.target_players": "Цель: Игроки",
+  "gui.turret.target_trusted": "Цель: Доверенные игроки",
+  "gui.turret.energy_per_shot": "Энергия за выстрел: ",
+  "block.mekanism_turrets.electric_fence": "Электрический забор",
+  "block.mekanism_turrets.basic_laser_turret": "Базовая лазерная турель",
+  "block.mekanism_turrets.advanced_laser_turret": "Продвинутая лазерная турель",
+  "block.mekanism_turrets.elite_laser_turret": "Элитная лазерная турель",
+  "block.mekanism_turrets.ultimate_laser_turret": "Совершенная лазерная турель",
+  "item_group.mekanism_turrets": "Mekanism: Турели",
+  "death.attack.mekanism_turrets.laser" : "%1$s был уничтожен лазерной турелью",
+  "death.attack.mekanism_turrets.electric_fence" : "%1$s был шокирован электрическим забором"
+}
