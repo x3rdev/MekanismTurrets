@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "mekanism_turrets:laser",
+    "mekanism_turrets:electric_fence"
+  ]
+}

@@ -53,6 +53,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.ArrayList;
 
 
 public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlockEntity {
@@ -73,6 +74,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     private boolean targetsPlayers = false;
     private boolean targetsTrusted = true;
     private @Nullable LivingEntity target;
+    private List<Vec3> targetPreVelocity = new ArrayList<Vec3>();
     public float xRot0 = 0;
     public float yRot0 = 0;
     private int coolDown = 0;
@@ -145,13 +147,20 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         tryFindTarget();
         energyContainer.setEnergyPerTick(FloatingLong.create(laserShotEnergy()));
         if(target != null) {
-            Vec3 targetPos = getShootLocation(target);
+            if (targetPreVelocity.size()>=5){
+                targetPreVelocity.remove(0);
+            }
+            targetPreVelocity.add(target.getDeltaMovement());
+            Vec3 targetPos = getShootLocation(target,targetPreVelocity);
             setAnimData(TARGET_POS_X, targetPos.x);
             setAnimData(TARGET_POS_Y, targetPos.y);
             setAnimData(TARGET_POS_Z, targetPos.z);
             setAnimData(HAS_TARGET, target != null);
             if(coolDown == 0) {
-                coolDown = Math.max(0, tier.getCooldown()-(2*upgradeComponent.getUpgrades(Upgrade.SPEED)));
+                float x = 10*((float) upgradeComponent.getUpgrades(Upgrade.SPEED) /8);
+                //make the speed upgrade function properly as the tip with function \frac{(x+1)\ln{x+1}-x}{16} 's curve
+                coolDown = Math.max(0,(int) Math.floor((tier.getCooldown()*(1-(0.9*(((x+1)*Math.log(x+1)-x)/16))))));
+                //coolDown = Math.max(0, tier.getCooldown()-(2*upgradeComponent.getUpgrades(Upgrade.SPEED)));
                 if(energyContainer.getEnergy().greaterOrEqual(FloatingLong.create(laserShotEnergy()))) {
                     shootLaser();
                     if(tier.equals(LaserTurretTier.ULTIMATE)) {
@@ -163,16 +172,22 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             }
         }
     }
-
-    private static Vec3 getShootLocation(LivingEntity entity) {
+//use 5 ticks' velocity data to predict movement,providing more accurate prediction
+    private static Vec3 getShootLocation(LivingEntity entity,List<Vec3> preV) {
+        Vec3 averageVelocity = Vec3.ZERO;
+        for (Vec3 prevVelo : preV){
+            averageVelocity = averageVelocity.add(prevVelo);
+        }
+        averageVelocity = averageVelocity.scale(1.0 / preV.size());// calculate averageVelocity
         Vec3 targetPos = new Vec3(entity.getX(), entity.getY(), entity.getZ());
-        double laserSpeed = 0.75F*3F; //Laser speed is constant
+        double laserSpeed = 3F; //Laser speed is constant
         for (int i = 1; i < 21; i++) { //Tries to predict the path of the entity one second into the future
-            Vec3 deltaMovement = entity.getDeltaMovement().multiply(0.95, 0, 0.95);
+            Vec3 deltaMovement = averageVelocity.multiply(0.4, 0, 0.4);
             Vec3 nextPos = targetPos.add(deltaMovement.scale(i-1));
             if(nextPos.length() <= laserSpeed*i || i == 20) {
-                return new Vec3(nextPos.x, nextPos.y+(entity.getBbHeight()*0.75), nextPos.z);
+                return new Vec3(nextPos.x, nextPos.y+(entity.getBbHeight()*0.8), nextPos.z);
             }
+
         }
         return targetPos;
     }
@@ -186,10 +201,10 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             triggerAnim("controller", "shoot");
 
             Vec3 center = getBlockPos().getCenter();
-            Vec3 targetPos = getShootLocation(target);
+            Vec3 targetPos = getShootLocation(target,targetPreVelocity);
 
             LaserEntity laser = new LaserEntity(level, center.add(0, -0.15, 0), tier.getDamage());
-            laser.setDeltaMovement(center.vectorTo(targetPos).normalize().scale(2.25F));
+            laser.setDeltaMovement(center.vectorTo(targetPos).normalize().scale(3.0F));
             level.addFreshEntity(laser);
             energyContainer.extract(FloatingLong.create(laserShotEnergy()), Action.EXECUTE, AutomationType.INTERNAL);
         }
@@ -203,6 +218,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         if(!isValidTarget(target)) {
             setAnimData(HAS_TARGET, false);
             target = null;
+            targetPreVelocity.clear();
         }
     }
 
