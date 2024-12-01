@@ -142,7 +142,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         //1.00, 1.81, 2.72, 4.24, 6.85, 9.45, 10.97, 11.88, 12.69
         //https://www.geogebra.org/calculator/dzemv5sh
         double A = 11.7 / 4.4;
-        double COEFFICIENT = 5.0 / 2.0 * Math.sqrt(Math.PI);
+        double COEFFICIENT = (5.0 / 2.0) * Math.sqrt(Math.PI) * (1/(Math.sqrt(2) * Math.PI));
         double erfPart = COEFFICIENT * Erf.erf(0.5 * Math.sqrt(2) * (x - 4));
         double linearPart = (3.0 / 10.0) * x + 1;
         return (A * (erfPart + linearPart))+1;
@@ -196,7 +196,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             Vec3 deltaMovement = averageVelocity.multiply(0.4, 0, 0.4);
             Vec3 nextPos = targetPos.add(deltaMovement.scale(i-1));
             if(nextPos.length() <= laserSpeed*i || i == 20) {
-                return new Vec3(nextPos.x, nextPos.y+(entity.getBbHeight()*0.8), nextPos.z);
+                return new Vec3(nextPos.x, nextPos.y+(entity.getBbHeight()*0.75), nextPos.z-0.07);
             }
 
         }
