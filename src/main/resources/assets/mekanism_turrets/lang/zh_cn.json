@@ -16,5 +16,6 @@
   "block.mekanism_turrets.ultimate_laser_turret": "终极激光炮塔",
   "item_group.mekanism_turrets": "通用机械炮塔",
   "death.attack.mekanism_turrets.laser": "%1$s 被激光炮塔蒸发了",
+  "death.attack.mekanism_turrets.laser.player": "%1$s 被激光炮塔蒸发了",
   "death.attack.mekanism_turrets.electric_fence": "%1$s 被电栅栏电死了"
 }
