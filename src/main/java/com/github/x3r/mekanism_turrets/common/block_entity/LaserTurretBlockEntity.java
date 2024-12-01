@@ -1,6 +1,5 @@
 package com.github.x3r.mekanism_turrets.common.block_entity;
 
-import com.github.x3r.mekanism_turrets.MekanismTurrets;
 import com.github.x3r.mekanism_turrets.MekanismTurretsConfig;
 import com.github.x3r.mekanism_turrets.common.entity.LaserEntity;
 import com.github.x3r.mekanism_turrets.common.registry.SoundRegistry;
@@ -54,7 +53,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.ArrayList;
-
+import org.apache.commons.math3.special.Erf;
 
 public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlockEntity {
 
@@ -139,6 +138,15 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         this.targetsTrusted = targetsTrusted;
     }
 
+    private double getCoolDownMultiplier(int x){
+        //1.00, 1.81, 2.72, 4.24, 6.85, 9.45, 10.97, 11.88, 12.69
+        //https://www.geogebra.org/calculator/dzemv5sh
+        double A = 11.7 / 4.4;
+        double COEFFICIENT = 5.0 / 2.0 * Math.sqrt(Math.PI);
+        double erfPart = COEFFICIENT * Erf.erf(0.5 * Math.sqrt(2) * (x - 4));
+        double linearPart = (3.0 / 10.0) * x + 1;
+        return (A * (erfPart + linearPart))+1;
+    }
     @Override
     protected void onUpdateServer() {
         super.onUpdateServer();
@@ -157,9 +165,12 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             setAnimData(TARGET_POS_Z, targetPos.z);
             setAnimData(HAS_TARGET, target != null);
             if(coolDown == 0) {
-                float x = 10*((float) upgradeComponent.getUpgrades(Upgrade.SPEED) /8);
-                //make the speed upgrade function properly as the tip with function \frac{(x+1)\ln{x+1}-x}{16} 's curve
-                coolDown = Math.max(0,(int) Math.floor((tier.getCooldown()*(1-(0.9*(((x+1)*Math.log(x+1)-x)/16))))));
+                //v1 : x part following
+                //float x = 10*((float) upgradeComponent.getUpgrades(Upgrade.SPEED) /8);
+                //v1 : make the speed upgrade function properly as the tip with function \frac{(x+1)\ln{x+1}-x}{16} 's curve
+                //v2 : use mooore complex function and get mooore effect with low count upgreads
+                coolDown = (int) Math.max(0,tier.getCooldown() / getCoolDownMultiplier(upgradeComponent.getUpgrades(Upgrade.SPEED)));
+                //coolDown = Math.max(0,(int) Math.floor((tier.getCooldown()*(1-(0.9*(((x+1)*Math.log(x+1)-x)/16))))));
                 //coolDown = Math.max(0, tier.getCooldown()-(2*upgradeComponent.getUpgrades(Upgrade.SPEED)));
                 if(energyContainer.getEnergy().greaterOrEqual(FloatingLong.create(laserShotEnergy()))) {
                     shootLaser();
