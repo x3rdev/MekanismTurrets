@@ -133,6 +133,10 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         this.targetsTrusted = targetsTrusted;
     }
 
+    public boolean hasTarget() {
+        return target != null;
+    }
+
     @Override
     protected boolean onUpdateServer() {
         energySlot.fillContainerOrConvert();
@@ -146,11 +150,11 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
             setAnimData(TARGET_POS_Z, targetPos.z);
             setAnimData(HAS_TARGET, target != null);
             if(coolDown == 0) {
-                coolDown = Math.max(0, tier.getCooldown()-(2*upgradeComponent.getUpgrades(Upgrade.SPEED)));
+                coolDown = Math.max(2, tier.getCooldown()-(2*upgradeComponent.getUpgrades(Upgrade.SPEED)));
                 if(energyContainer.getEnergy() >= laserShotEnergy()) {
                     shootLaser();
                     if(tier.equals(LaserTurretTier.ULTIMATE)) {
-                        Scheduler.schedule(this::shootLaser, 10);
+                        Scheduler.schedule(this::shootLaser, coolDown/2);
                     }
                 }
             } else {

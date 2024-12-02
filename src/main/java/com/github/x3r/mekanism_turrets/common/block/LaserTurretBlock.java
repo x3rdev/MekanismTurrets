@@ -51,8 +51,6 @@ public class LaserTurretBlock extends BlockTile.BlockTileModel<LaserTurretBlockE
         builder.add(FACING);
     }
 
-
-
     public BlockState rotate(BlockState pState, Rotation pRot) {
         return pState.setValue(FACING, pRot.rotate(pState.getValue(FACING)));
     }
@@ -71,6 +69,17 @@ public class LaserTurretBlock extends BlockTile.BlockTileModel<LaserTurretBlockE
             return InteractionResult.SUCCESS_NO_ITEM_USED;
         }
         return tile.openGui(player);
+    }
+
+    @Override
+    public boolean hasAnalogOutputSignal(@NotNull BlockState blockState) {
+        return true;
+    }
+
+    @Override
+    public int getAnalogOutputSignal(@NotNull BlockState blockState, @NotNull Level world, @NotNull BlockPos pos) {
+        LaserTurretBlockEntity tile = WorldUtils.getTileEntity(LaserTurretBlockEntity.class, world, pos, true);
+        return tile.hasTarget() ? 15 : 0;
     }
 
     @Override
