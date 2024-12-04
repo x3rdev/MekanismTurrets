@@ -75,8 +75,9 @@ public class LaserEntity extends Projectile {
                                 if (armorStack.getDamageValue() < armorStack.getMaxDamage()) {
                                     armorStack.hurtAndBreak(durabilityLoss, (LivingEntity) entity,
                                             (player) -> player.broadcastBreakEvent(armorStack.getEquipmentSlot()));
-                                } else {
-                                    ((Player) entity).getInventory().setItem(armorStack.getEquipmentSlot().getIndex(),null);
+                                }
+                                else{
+                                    armorStack.setDamageValue(0);
                                 }
 
                             }
