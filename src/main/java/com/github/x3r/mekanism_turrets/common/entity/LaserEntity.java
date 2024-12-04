@@ -3,6 +3,9 @@ package com.github.x3r.mekanism_turrets.common.entity;
 import com.github.x3r.mekanism_turrets.common.block.LaserTurretBlock;
 import com.github.x3r.mekanism_turrets.common.registry.DamageTypeRegistry;
 import com.github.x3r.mekanism_turrets.common.registry.EntityRegistry;
+import mekanism.client.render.armor.MekaSuitArmor;
+import mekanism.common.item.gear.ItemMekaSuitArmor;
+import mekanism.common.registries.MekanismModules;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -51,7 +54,7 @@ public class LaserEntity extends Projectile {
             }
             level().getEntities(this, getBoundingBox().inflate(0.75)).forEach(entity -> {
                 boolean isPlayer = entity.getType().toString().equals("entity.minecraft.player");
-
+                boolean isImmuneToLaser = false;
                 if (isPlayer) {
                     double finaldamage = 0;
                     float armor = 0;
@@ -59,6 +62,13 @@ public class LaserEntity extends Projectile {
                     float protectEnchantReduction = (float) (0.01 * Math.max(80, 4 * getEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, (LivingEntity) entity)));
                     for (ItemStack armorStack : entity.getArmorSlots()) {
                         if (armorStack.getItem() instanceof ArmorItem armorItem) {
+                            if (armorItem instanceof ItemMekaSuitArmor){
+                                ItemMekaSuitArmor mekasuit = (ItemMekaSuitArmor) armorItem;
+                                isImmuneToLaser= mekasuit.isModuleEnabled(armorStack, MekanismModules.LASER_DISSIPATION_UNIT);
+                                if(isImmuneToLaser){
+                                    break;
+                                }
+                            }
                             armor = armor + armorItem.getDefense();
                             toughness = toughness + armorItem.getToughness();
                         }
@@ -66,8 +76,11 @@ public class LaserEntity extends Projectile {
                     float damageReductionRate = (float) (Math.min(20, Math.max(armor / 5, armor - ((4 * this.damage) / (Math.min(toughness, 20) + 8)))) / 25);
                     finaldamage = this.damage * (1 - damageReductionRate) * (1 - protectEnchantReduction);
                     int durabilityLoss = (int) Math.floor(this.damage - finaldamage);
-                    for (ItemStack armorStack : entity.getArmorSlots()) {
-                        armorStack.hurtAndBreak(durabilityLoss, (LivingEntity) entity, (player) -> player.broadcastBreakEvent(armorStack.getEquipmentSlot()));
+                    if (!isImmuneToLaser)
+                    {
+                        for (ItemStack armorStack : entity.getArmorSlots()) {
+                            armorStack.hurtAndBreak(durabilityLoss, (LivingEntity) entity, (player) -> player.broadcastBreakEvent(armorStack.getEquipmentSlot()));
+                        }
                     }
                     this.damage = finaldamage;
                 }
@@ -78,7 +91,9 @@ public class LaserEntity extends Projectile {
                 } catch (Exception e) {
                     ;
                 }
-                entity.hurt(new DamageTypeRegistry(level().registryAccess(), player).laser(), (float) this.damage);
+                if (!isImmuneToLaser) {
+                    entity.hurt(new DamageTypeRegistry(level().registryAccess(), player).laser(), (float) this.damage);
+                }
             });
             lifeTime++;
             if (lifeTime > 10 * 20) {
