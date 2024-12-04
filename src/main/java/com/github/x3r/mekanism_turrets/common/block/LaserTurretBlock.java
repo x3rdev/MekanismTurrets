@@ -11,9 +11,12 @@ import mekanism.common.util.VoxelShapeUtils;
 import mekanism.common.util.WorldUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -51,7 +54,18 @@ public class LaserTurretBlock extends BlockTile.BlockTileModel<LaserTurretBlockE
         super(type, properties -> properties.mapColor(BlockResourceInfo.STEEL.getMapColor()));
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
+    @Override
+    public void setPlacedBy(@NotNull Level world, @NotNull BlockPos pos, @NotNull BlockState state, @Nullable LivingEntity placer, @NotNull ItemStack stack){
+        super.setPlacedBy(world,pos,state,placer,stack);
+        if (stack.hasTag() && stack.getTag().contains("mekData")) {
+            CompoundTag nbtData = stack.getTag().getCompound("mekData");
+            LaserTurretBlockEntity tileEntity = (LaserTurretBlockEntity) world.getBlockEntity(pos);
+            if (tileEntity != null) {
+                tileEntity.load(nbtData);
+            }
+        }
 
+    }
     @Override
     protected void createBlockStateDefinition(@NotNull StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);

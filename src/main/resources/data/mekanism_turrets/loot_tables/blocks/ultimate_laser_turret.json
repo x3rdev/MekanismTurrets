@@ -45,6 +45,26 @@
                   "op": "replace",
                   "source": "Items",
                   "target": "mekData.Items"
+                },
+                {
+                  "op": "replace",
+                  "source": "targetsHostile",
+                  "target": "mekData.targetsHostile"
+                },
+                {
+                  "op": "replace",
+                  "source": "targetsPlayers",
+                  "target": "mekData.targetsPlayers"
+                },
+                {
+                  "op": "replace",
+                  "source": "targetsTrusted",
+                  "target": "mekData.targetsTrusted"
+                },
+                {
+                  "op": "replace",
+                  "source": "targetsPassive",
+                  "target": "mekData.targetsPassive"
                 }
               ],
               "source": "block_entity"
