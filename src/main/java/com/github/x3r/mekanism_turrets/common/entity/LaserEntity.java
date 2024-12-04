@@ -72,7 +72,13 @@ public class LaserEntity extends Projectile {
                         int durabilityLoss = (int) Math.floor(this.damage - finaldamage);
                         if (!isImmuneToLaser) {
                             for (ItemStack armorStack : entity.getArmorSlots()) {
-                                armorStack.hurtAndBreak(durabilityLoss, (LivingEntity) entity, (player) -> player.broadcastBreakEvent(armorStack.getEquipmentSlot()));
+                                if (armorStack.getDamageValue() < armorStack.getMaxDamage()) {
+                                    armorStack.hurtAndBreak(durabilityLoss, (LivingEntity) entity,
+                                            (player) -> player.broadcastBreakEvent(armorStack.getEquipmentSlot()));
+                                } else {
+                                    ((Player) entity).getInventory().setItem(armorStack.getEquipmentSlot().getIndex(),null);
+                                }
+
                             }
                         }
                         this.damage = finaldamage;
