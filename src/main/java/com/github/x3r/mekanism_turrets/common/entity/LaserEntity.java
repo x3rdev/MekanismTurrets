@@ -51,26 +51,34 @@ public class LaserEntity extends Projectile {
             }
             level().getEntities(this, getBoundingBox().inflate(0.75)).forEach(entity -> {
                 boolean isPlayer = entity.getType().toString().equals("entity.minecraft.player");
-                if(isPlayer){
+
+                if (isPlayer) {
+                    double finaldamage = 0;
                     float armor = 0;
                     float toughness = 0;
-                    float protectEnchantReduction = (float) (0.01*Math.max(80,4*getEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, (LivingEntity) entity)));
+                    float protectEnchantReduction = (float) (0.01 * Math.max(80, 4 * getEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, (LivingEntity) entity)));
                     for (ItemStack armorStack : entity.getArmorSlots()) {
                         if (armorStack.getItem() instanceof ArmorItem armorItem) {
                             armor = armor + armorItem.getDefense();
                             toughness = toughness + armorItem.getToughness();
                         }
                     }
-                    float damageReductionRate = (float) (Math.min(20,Math.max(armor/5,armor - ((4*this.damage)/(Math.min(toughness,20)+8)) ))/25);
-                    this.damage = this.damage * (1-damageReductionRate) * (1-protectEnchantReduction);
+                    float damageReductionRate = (float) (Math.min(20, Math.max(armor / 5, armor - ((4 * this.damage) / (Math.min(toughness, 20) + 8)))) / 25);
+                    finaldamage = this.damage * (1 - damageReductionRate) * (1 - protectEnchantReduction);
+                    int durabilityLoss = (int) Math.floor(this.damage - finaldamage);
+                    for (ItemStack armorStack : entity.getArmorSlots()) {
+                        armorStack.hurtAndBreak(durabilityLoss, (LivingEntity) entity, (player) -> player.broadcastBreakEvent(armorStack.getEquipmentSlot()));
+                    }
+                    this.damage = finaldamage;
                 }
+
                 Entity player = getOwner();
                 try {
                     ((LivingEntity) entity).setLastHurtByPlayer((Player) this.getOwner());
                 } catch (Exception e) {
                     ;
                 }
-                entity.hurt(new DamageTypeRegistry(level().registryAccess(),player).laser(), (float) this.damage);
+                entity.hurt(new DamageTypeRegistry(level().registryAccess(), player).laser(), (float) this.damage);
             });
             lifeTime++;
             if (lifeTime > 10 * 20) {
