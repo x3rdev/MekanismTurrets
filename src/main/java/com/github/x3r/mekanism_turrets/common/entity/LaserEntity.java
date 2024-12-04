@@ -3,28 +3,21 @@ package com.github.x3r.mekanism_turrets.common.entity;
 import com.github.x3r.mekanism_turrets.common.block.LaserTurretBlock;
 import com.github.x3r.mekanism_turrets.common.registry.DamageTypeRegistry;
 import com.github.x3r.mekanism_turrets.common.registry.EntityRegistry;
-import mekanism.client.render.armor.MekaSuitArmor;
 import mekanism.common.item.gear.ItemMekaSuitArmor;
 import mekanism.common.registries.MekanismModules;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.checkerframework.checker.units.qual.A;
-import software.bernie.geckolib.event.GeoRenderEvent;
 import net.minecraft.world.entity.player.Player;
 
 import static net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentLevel;
@@ -55,40 +48,44 @@ public class LaserEntity extends Projectile {
             level().getEntities(this, getBoundingBox().inflate(0.75)).forEach(entity -> {
                 boolean isPlayer = entity.getType().toString().equals("entity.minecraft.player");
                 boolean isImmuneToLaser = false;
-                if (isPlayer) {
-                    double finaldamage = 0;
-                    float armor = 0;
-                    float toughness = 0;
-                    float protectEnchantReduction = (float) (0.01 * Math.max(80, 4 * getEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, (LivingEntity) entity)));
-                    for (ItemStack armorStack : entity.getArmorSlots()) {
-                        if (armorStack.getItem() instanceof ArmorItem armorItem) {
-                            if (armorItem instanceof ItemMekaSuitArmor){
-                                ItemMekaSuitArmor mekasuit = (ItemMekaSuitArmor) armorItem;
-                                isImmuneToLaser= mekasuit.isModuleEnabled(armorStack, MekanismModules.LASER_DISSIPATION_UNIT);
-                                if(isImmuneToLaser){
-                                    break;
-                                }
-                            }
-                            armor = armor + armorItem.getDefense();
-                            toughness = toughness + armorItem.getToughness();
-                        }
-                    }
-                    float damageReductionRate = (float) (Math.min(20, Math.max(armor / 5, armor - ((4 * this.damage) / (Math.min(toughness, 20) + 8)))) / 25);
-                    finaldamage = this.damage * (1 - damageReductionRate) * (1 - protectEnchantReduction);
-                    int durabilityLoss = (int) Math.floor(this.damage - finaldamage);
-                    if (!isImmuneToLaser)
-                    {
+                try {
+                    if (isPlayer) {
+                        double finaldamage = 0;
+                        float armor = 0;
+                        float toughness = 0;
+                        float protectEnchantReduction = (float) (0.01 * Math.max(80, 4 * getEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, (LivingEntity) entity)));
                         for (ItemStack armorStack : entity.getArmorSlots()) {
-                            armorStack.hurtAndBreak(durabilityLoss, (LivingEntity) entity, (player) -> player.broadcastBreakEvent(armorStack.getEquipmentSlot()));
+                            if (armorStack.getItem() instanceof ArmorItem armorItem) {
+                                if (armorItem instanceof ItemMekaSuitArmor) {
+                                    ItemMekaSuitArmor mekasuit = (ItemMekaSuitArmor) armorItem;
+                                    isImmuneToLaser = mekasuit.isModuleEnabled(armorStack, MekanismModules.LASER_DISSIPATION_UNIT);
+                                    if (isImmuneToLaser) {
+                                        break;
+                                    }
+                                }
+                                armor = armor + armorItem.getDefense();
+                                toughness = toughness + armorItem.getToughness();
+                            }
                         }
+                        float damageReductionRate = (float) (Math.min(20, Math.max(armor / 5, armor - ((4 * this.damage) / (Math.min(toughness, 20) + 8)))) / 25);
+                        finaldamage = this.damage * (1 - damageReductionRate) * (1 - protectEnchantReduction);
+                        int durabilityLoss = (int) Math.floor(this.damage - finaldamage);
+                        if (!isImmuneToLaser) {
+                            for (ItemStack armorStack : entity.getArmorSlots()) {
+                                armorStack.hurtAndBreak(durabilityLoss, (LivingEntity) entity, (player) -> player.broadcastBreakEvent(armorStack.getEquipmentSlot()));
+                            }
+                        }
+                        this.damage = finaldamage;
                     }
-                    this.damage = finaldamage;
+                }
+                catch (Exception ignored){
+                    ;
                 }
 
                 Entity player = getOwner();
                 try {
                     ((LivingEntity) entity).setLastHurtByPlayer((Player) this.getOwner());
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                     ;
                 }
                 if (!isImmuneToLaser) {
