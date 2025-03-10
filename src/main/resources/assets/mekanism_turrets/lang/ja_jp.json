@@ -1,0 +1,20 @@
+{
+  "container.mekanism_turrets.basic_laser_turret": "基本レーザータレット",
+  "container.mekanism_turrets.advanced_laser_turret": " 発展レーザータレット",
+  "container.mekanism_turrets.elite_laser_turret": "精鋭レーザータレット",
+  "container.mekanism_turrets.ultimate_laser_turret": "究極レーザータレット",
+  "description.mekanism.laser_turret": "敵対的なモブから拠点や工場を守るために使用できるレーザータレット。",
+  "gui.turret.target_hostile": "敵対的モブをターゲット",
+  "gui.turret.target_passive": "友好的モブをターゲット",
+  "gui.turret.target_players": "プレイヤーをターゲット",
+  "gui.turret.target_trusted": "信頼されたプレイヤーをターゲット",
+  "gui.turret.energy_per_shot": "一発あたりの消費エネルギー: ",
+  "block.mekanism_turrets.electric_fence": "電気柵",
+  "block.mekanism_turrets.basic_laser_turret": "基本レーザータレット",
+  "block.mekanism_turrets.advanced_laser_turret": "発展レーザータレット",
+  "block.mekanism_turrets.elite_laser_turret": "精鋭レーザータレット",
+  "block.mekanism_turrets.ultimate_laser_turret": "究極レーザータレット",
+  "item_group.mekanism_turrets": "メカニズムタレット",
+  "death.attack.mekanism_turrets.laser": "%1$s はレーザータレットによって消し炭にされた",
+  "death.attack.mekanism_turrets.electric_fence": "%1$s は電気柵によって感電死した"
+}
