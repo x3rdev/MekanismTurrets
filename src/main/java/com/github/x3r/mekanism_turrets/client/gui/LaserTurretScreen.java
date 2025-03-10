@@ -110,7 +110,8 @@ public class LaserTurretScreen extends GuiMekanismTile<LaserTurretBlockEntity, M
     @Override
     protected void drawForegroundText(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
         renderTitleText(guiGraphics);
-        drawString(guiGraphics, playerInventoryTitle, inventoryLabelX, inventoryLabelY, titleTextColor());
+
+        drawTitleText(guiGraphics, playerInventoryTitle, titleTextColor());
         super.drawForegroundText(guiGraphics, mouseX, mouseY);
     }
 }
