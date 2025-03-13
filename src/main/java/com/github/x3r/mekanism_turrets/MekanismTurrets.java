@@ -54,7 +54,7 @@ public class MekanismTurrets {
         event.registerBlock(
                 Capabilities.EnergyStorage.BLOCK,
                 (level, pos, state, blockEntity, context) -> ((ElectricFenceBlockEntity) blockEntity).energyStorage,
-                BlockRegistry.ELECTRIC_FENCE.getBlock());
+                BlockRegistry.ELECTRIC_FENCE.get());
     }
 
     @SubscribeEvent

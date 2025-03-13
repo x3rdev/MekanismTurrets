@@ -18,7 +18,7 @@ public class ItemRegistry {
         public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MekanismTurrets.MOD_ID);
 
         public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MEKT_ITEM_TAB = CREATIVE_MODE_TABS.register("main", () -> CreativeModeTab.builder()
-                .icon(BlockRegistry.ADVANCED_LASER_TURRET::getItemStack)
+                .icon(() -> BlockRegistry.ADVANCED_LASER_TURRET.asItem().getDefaultInstance())
                 .title(Component.translatable("item_group." + MekanismTurrets.MOD_ID))
                 .displayItems((displayParameters, output) -> {
                     ItemRegistry.ITEMS.getEntries().forEach(itemRegistryObject -> output.accept(itemRegistryObject.get()));

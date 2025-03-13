@@ -1,12 +1,10 @@
 package com.github.x3r.mekanism_turrets.common.block_entity;
 
-import com.github.x3r.mekanism_turrets.MekanismTurrets;
 import com.github.x3r.mekanism_turrets.MekanismTurretsConfig;
 import com.github.x3r.mekanism_turrets.common.entity.LaserEntity;
 import com.github.x3r.mekanism_turrets.common.registry.SoundRegistry;
 import com.github.x3r.mekanism_turrets.common.scheduler.Scheduler;
 import mekanism.api.*;
-import mekanism.api.providers.IBlockProvider;
 import mekanism.common.block.attribute.Attribute;
 import mekanism.common.capabilities.energy.MachineEnergyContainer;
 import mekanism.common.capabilities.holder.energy.EnergyContainerHelper;
@@ -22,6 +20,7 @@ import mekanism.common.tile.component.ITileComponent;
 import mekanism.common.upgrade.IUpgradeData;
 import mekanism.common.util.NBTUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -32,8 +31,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -46,10 +45,8 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.dataticket.SerializableDataTicket;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 
 public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlockEntity {
@@ -74,7 +71,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     private int coolDown = 0;
     private int idleTicks = 0;
 
-    public LaserTurretBlockEntity(IBlockProvider blockProvider, BlockPos pos, BlockState state) {
+    public LaserTurretBlockEntity(Holder<Block> blockProvider, BlockPos pos, BlockState state) {
         super(blockProvider, pos, state);
     }
 
@@ -359,7 +356,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     @Override
     protected void presetVariables() {
         super.presetVariables();
-        tier = Attribute.getTier(getBlockType(), LaserTurretTier.class);
+        tier = Attribute.getTier(getBlockHolder(), LaserTurretTier.class);
     }
 
     @Override
