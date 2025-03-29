@@ -1,6 +1,5 @@
 package com.github.x3r.mekanism_turrets.common.block_entity;
 
-import com.github.x3r.mekanism_turrets.MekanismTurrets;
 import com.github.x3r.mekanism_turrets.MekanismTurretsConfig;
 import com.github.x3r.mekanism_turrets.common.entity.LaserEntity;
 import com.github.x3r.mekanism_turrets.common.registry.SoundRegistry;
@@ -24,6 +23,7 @@ import mekanism.common.tile.component.ITileComponent;
 import mekanism.common.upgrade.IUpgradeData;
 import mekanism.common.util.NBTUtils;
 import mekanism.common.util.SecurityUtils;
+import mekanism.common.util.UpgradeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +31,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -50,7 +52,6 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.network.SerializableDataTicket;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -80,6 +81,16 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
 
     public LaserTurretBlockEntity(IBlockProvider blockProvider, BlockPos pos, BlockState state) {
         super(blockProvider, pos, state);
+    }
+
+    @Override
+    public void blockRemoved() {
+        Vec3 pos = getBlockPos().getCenter();
+        for (Upgrade upgrade : upgradeComponent.getInstalledTypes()) {
+            level.addFreshEntity(new ItemEntity(level, pos.x, pos.y, pos.z,
+                    UpgradeUtils.getStack(upgrade, upgradeComponent.getUpgrades(upgrade))));
+        }
+        super.blockRemoved();
     }
 
     @Override
