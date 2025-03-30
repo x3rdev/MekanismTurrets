@@ -19,6 +19,7 @@ import mekanism.common.tile.base.TileEntityMekanism;
 import mekanism.common.tile.component.ITileComponent;
 import mekanism.common.upgrade.IUpgradeData;
 import mekanism.common.util.NBTUtils;
+import mekanism.common.util.UpgradeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -29,6 +30,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.Block;
@@ -73,6 +75,16 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
 
     public LaserTurretBlockEntity(Holder<Block> blockProvider, BlockPos pos, BlockState state) {
         super(blockProvider, pos, state);
+    }
+
+    @Override
+    public void blockRemoved() {
+        Vec3 pos = getBlockPos().getCenter();
+        for (Upgrade upgrade : upgradeComponent.getInstalledTypes()) {
+            level.addFreshEntity(new ItemEntity(level, pos.x, pos.y, pos.z,
+                    UpgradeUtils.getStack(upgrade, upgradeComponent.getUpgrades(upgrade))));
+        }
+        super.blockRemoved();
     }
 
     @Override
