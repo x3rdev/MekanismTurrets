@@ -152,7 +152,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         tryInvalidateTarget();
         tryFindTarget();
         energyContainer.setEnergyPerTick(laserShotEnergy());
-        if(target != null) {
+        if(level != null && target != null) {
             Vec3 targetPos = getShootLocation(target);
             setAnimData(TARGET_POS_X, targetPos.x);
             setAnimData(TARGET_POS_Y, targetPos.y);
