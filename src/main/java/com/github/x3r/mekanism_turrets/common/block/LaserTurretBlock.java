@@ -41,7 +41,7 @@ public class LaserTurretBlock extends BlockTile.BlockTileModel<LaserTurretBlockE
     private static VoxelShape SHAPE_UP;
     private static VoxelShape SHAPE_DOWN;
     public LaserTurretBlock(BlockTypeTile<LaserTurretBlockEntity> type) {
-        super(type, properties -> properties.mapColor(BlockResourceInfo.STEEL.getMapColor()));
+        super(type, properties -> properties.mapColor(BlockResourceInfo.STEEL.getMapColor()).noOcclusion());
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
@@ -180,6 +180,11 @@ public class LaserTurretBlock extends BlockTile.BlockTileModel<LaserTurretBlockE
     @Override
     public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         return Shapes.block();
+    }
+
+    @Override
+    protected VoxelShape getVisualShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return super.getVisualShape(state, level, pos, context);
     }
 
     @Override
