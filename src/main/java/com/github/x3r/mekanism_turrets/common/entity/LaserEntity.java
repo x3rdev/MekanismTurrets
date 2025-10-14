@@ -4,7 +4,9 @@ import com.github.x3r.mekanism_turrets.common.block.LaserTurretBlock;
 import com.github.x3r.mekanism_turrets.common.registry.DamageTypeRegistry;
 import com.github.x3r.mekanism_turrets.common.registry.EntityRegistry;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
@@ -38,16 +40,20 @@ public class LaserEntity extends Projectile {
     public void tick() {
         super.tick();
         if(!level().isClientSide()) {
+            if (lifeTime++ > 10 * 20) {
+                this.discard();
+                return;
+            }
+            if(level().isLoaded(this.blockPosition())) {
+                this.discard();
+                return;
+            }
             HitResult hitResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
             if(hitResult.getType().equals(HitResult.Type.BLOCK)) {
                 onHitBlock((BlockHitResult) hitResult);
             }
-            level().getEntities(this, getBoundingBox().inflate(0.5)).forEach(entity -> {
-                entity.hurt(new DamageTypeRegistry(level().registryAccess()).laser(), (float) this.damage);
-            });
-            lifeTime++;
-            if (lifeTime > 10 * 20) {
-                this.discard();
+            if(hitResult.getType().equals(HitResult.Type.ENTITY)) {
+                ((EntityHitResult) hitResult).getEntity().hurt(new DamageTypeRegistry(level().registryAccess()).laser(), (float) this.damage);
             }
         }
         this.setPos(this.position().add(this.getDeltaMovement()));
@@ -68,5 +74,15 @@ public class LaserEntity extends Projectile {
         if(!(state.getBlock() instanceof LaserTurretBlock) && state.isCollisionShapeFullBlock(level(), pResult.getBlockPos())) {
             this.discard();
         }
+    }
+
+    @Override
+    public boolean shouldBeSaved() {
+        return false;
+    }
+
+    @Override
+    public boolean canUsePortal(boolean allowPassengers) {
+        return false;
     }
 }

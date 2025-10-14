@@ -14,9 +14,9 @@ public class EntityRegistry {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MekanismTurrets.MOD_ID);
     public static final DeferredHolder<EntityType<?>, EntityType<LaserEntity>> LASER = ENTITY_TYPES.register("laser",
             () -> EntityType.Builder.<LaserEntity>of(LaserEntity::new, MobCategory.MISC)
-                    .sized(0.25F, 0.25F)
+                    .sized(0.75F, 0.75F)
                     .noSave()
-                    .clientTrackingRange(4)
-                    .updateInterval(10)
+                    .clientTrackingRange(8)
+                    .updateInterval(3)
                     .build(ResourceLocation.fromNamespaceAndPath(MekanismTurrets.MOD_ID, "laser").toString()));
 }
