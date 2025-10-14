@@ -3,6 +3,7 @@ package com.github.x3r.mekanism_turrets.common.entity;
 import com.github.x3r.mekanism_turrets.common.block.LaserTurretBlock;
 import com.github.x3r.mekanism_turrets.common.registry.DamageTypeRegistry;
 import com.github.x3r.mekanism_turrets.common.registry.EntityRegistry;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -44,7 +45,7 @@ public class LaserEntity extends Projectile {
                 this.discard();
                 return;
             }
-            if(!level().isLoaded(this.blockPosition())) {
+            if(!level().isLoaded(BlockPos.containing(this.position().add(this.getDeltaMovement())))) {
                 this.discard();
                 return;
             }
@@ -75,6 +76,8 @@ public class LaserEntity extends Projectile {
             this.discard();
         }
     }
+
+
 
     @Override
     public boolean shouldBeSaved() {
