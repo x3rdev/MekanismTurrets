@@ -44,7 +44,7 @@ public class LaserEntity extends Projectile {
                 this.discard();
                 return;
             }
-            if(level().isLoaded(this.blockPosition())) {
+            if(!level().isLoaded(this.blockPosition())) {
                 this.discard();
                 return;
             }
