@@ -3,11 +3,9 @@ package com.github.x3r.mekanism_turrets.common.entity;
 import com.github.x3r.mekanism_turrets.common.block.LaserTurretBlock;
 import com.github.x3r.mekanism_turrets.common.registry.DamageTypeRegistry;
 import com.github.x3r.mekanism_turrets.common.registry.EntityRegistry;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
@@ -16,6 +14,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.EntityEvent;
 
 public class LaserEntity extends Projectile {
 
@@ -45,7 +45,7 @@ public class LaserEntity extends Projectile {
                 this.discard();
                 return;
             }
-            if(!level().isLoaded(BlockPos.containing(this.position().add(this.getDeltaMovement())))) {
+            if(this.position().y > level().getMaxBuildHeight()+100) {
                 this.discard();
                 return;
             }
@@ -77,15 +77,17 @@ public class LaserEntity extends Projectile {
         }
     }
 
-
-
-    @Override
-    public boolean shouldBeSaved() {
-        return false;
-    }
-
     @Override
     public boolean canUsePortal(boolean allowPassengers) {
         return false;
+    }
+
+    @SubscribeEvent
+    public static void enterChunk(EntityEvent.EnteringSection event) {
+        if(!event.getEntity().level().isClientSide() && event.didChunkChange() && event.getEntity() instanceof LaserEntity) {
+            if(!((ServerLevel) event.getEntity().level()).areEntitiesLoaded(event.getPackedNewPos())) {
+                event.getEntity().discard();
+            }
+        }
     }
 }

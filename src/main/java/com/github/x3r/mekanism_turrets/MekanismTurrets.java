@@ -4,6 +4,7 @@ import com.github.x3r.mekanism_turrets.common.block_entity.ElectricFenceBlockEnt
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretBlockEntity;
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretTier;
 import com.github.x3r.mekanism_turrets.common.capability.MTEnergyStorage;
+import com.github.x3r.mekanism_turrets.common.entity.LaserEntity;
 import com.github.x3r.mekanism_turrets.common.packet.MekanismTurretsPacketHandler;
 import com.github.x3r.mekanism_turrets.common.registry.*;
 import com.github.x3r.mekanism_turrets.common.scheduler.Scheduler;
@@ -45,6 +46,8 @@ public class MekanismTurrets {
         modEventBus.addListener(this::registerCapabilities);
         modEventBus.addListener(this::loadConfig);
         modEventBus.addListener(MekanismTurretsPacketHandler::registerPayloadHandler);
+
+        neoEventBus.addListener(LaserEntity::enterChunk);
 
         registerDataTickets();
     }
