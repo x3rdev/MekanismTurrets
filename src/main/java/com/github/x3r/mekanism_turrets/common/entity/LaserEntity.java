@@ -3,12 +3,15 @@ package com.github.x3r.mekanism_turrets.common.entity;
 import com.github.x3r.mekanism_turrets.common.block.LaserTurretBlock;
 import com.github.x3r.mekanism_turrets.common.registry.DamageTypeRegistry;
 import com.github.x3r.mekanism_turrets.common.registry.EntityRegistry;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -86,7 +89,7 @@ public class LaserEntity extends Projectile {
     @SubscribeEvent
     public static void enterChunk(EntityEvent.EnteringSection event) {
         if(!event.getEntity().level().isClientSide() && event.didChunkChange() && event.getEntity() instanceof LaserEntity) {
-            if(!((ServerLevel) event.getEntity().level()).isPositionEntityTicking(BlockPos.of(event.getPackedNewPos()))) {
+            if(!((ServerLevel) event.getEntity().level()).isPositionEntityTicking(SectionPos.of(event.getPackedNewPos()).center())) {
                 event.getEntity().discard();
             }
         }
