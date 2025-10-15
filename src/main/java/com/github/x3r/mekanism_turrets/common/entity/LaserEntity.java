@@ -57,9 +57,14 @@ public class LaserEntity extends Projectile {
             if(hitResult.getType().equals(HitResult.Type.BLOCK)) {
                 onHitBlock((BlockHitResult) hitResult);
             }
-            if(hitResult.getType().equals(HitResult.Type.ENTITY)) {
-                ((EntityHitResult) hitResult).getEntity().hurt(new DamageTypeRegistry(level().registryAccess()).laser(), (float) this.damage);
+            if(!this.isRemoved()) { // may be removed by onHitBlock
+                level().getEntities(this, getBoundingBox().inflate(0.5)).forEach(entity -> {
+                    entity.hurt(new DamageTypeRegistry(level().registryAccess()).laser(), (float) this.damage);
+                });
             }
+//            if(hitResult.getType().equals(HitResult.Type.ENTITY)) {
+//                ((EntityHitResult) hitResult).getEntity().hurt(new DamageTypeRegistry(level().registryAccess()).laser(), (float) this.damage);
+//            }
         }
         this.setPos(this.position().add(this.getDeltaMovement()));
     }
