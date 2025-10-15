@@ -93,7 +93,7 @@ public class LaserEntity extends Projectile {
 
     @SubscribeEvent
     public static void enterChunk(EntityEvent.EnteringSection event) {
-        if(!event.getEntity().level().isClientSide()) {
+        if(!event.getEntity().level().isClientSide() && event.didChunkChange() && event.getEntity() instanceof LaserEntity) {
             ServerLevel level = ((ServerLevel) event.getEntity().level());
             if(level.isPositionEntityTicking(SectionPos.of(event.getPackedNewPos()).center())) {
                 event.getEntity().discard();
