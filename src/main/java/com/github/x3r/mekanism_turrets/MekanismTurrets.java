@@ -2,6 +2,7 @@ package com.github.x3r.mekanism_turrets;
 
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretBlockEntity;
 import com.github.x3r.mekanism_turrets.common.block_entity.LaserTurretTier;
+import com.github.x3r.mekanism_turrets.common.entity.LaserEntity;
 import com.github.x3r.mekanism_turrets.common.packet.MekanismTurretsPacketHandler;
 import com.github.x3r.mekanism_turrets.common.registry.*;
 import com.mojang.logging.LogUtils;
@@ -40,6 +41,7 @@ public class MekanismTurrets {
 
         modEventBus.addListener(this::loadConfig);
         MekanismTurretsPacketHandler.registerPackets();
+        forgeBus.addListener(LaserEntity::enterChunk);
 
         registerDataTickets();
     }
