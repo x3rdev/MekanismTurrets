@@ -13,8 +13,6 @@ Mekanism Turrets is an **addon mod** for [Mekanism](https://www.curseforge.com/m
 ## Features
 
 - **Automated Turrets**: Set up automatic defense turrets to protect your base from hostile mobs and intruders.
-- **Advanced Laser Fences**: Impenetrable laser barriers to guard your perimeter with style.
-- **Customizable Security Systems**: Tailor your defense mechanisms to fit your needs, including smart targeting systems.
 - **Seamless Mekanism Integration**: Utilizes Mekanism's energy systems and materials.
 
 Stay tuned for new updates, features, and compatibility patches!
