@@ -4,9 +4,9 @@
 ![Minecraft Version](https://img.shields.io/badge/minecraft_version-1.21.1-green)
 ![CurseForge Downloads](https://cf.way2muchnoise.eu/full_1031448_downloads.svg)
 
-Mekanism Turrets is an **addon mod** for [Mekanism]([https://mekanism.net/](https://www.curseforge.com/minecraft/mc-mods/mekanism)), enhancing your Minecraft base defenses with advanced turrets, fences, and security systems. This mod integrates seamlessly with Mekanism, providing additional layers of defense for your creations in the ever-dangerous world of Minecraft.
+Mekanism Turrets is an **addon mod** for [Mekanism](https://www.curseforge.com/minecraft/mc-mods/mekanism), enhancing your Minecraft base defenses with advanced turrets, fences, and security systems. This mod integrates seamlessly with Mekanism, providing additional layers of defense for your creations in the ever-dangerous world of Minecraft.
 
-🚩 **Official Mod Page:** [CurseForge]([https://www.curseforge.com/minecraft/mc-mods/1031448](https://www.curseforge.com/minecraft/mc-mods/mekanism-turrets-fences))
+🚩 **Official Mod Page:** [CurseForge](https://www.curseforge.com/minecraft/mc-mods/mekanism-turrets-fences)
 
 ---
 
