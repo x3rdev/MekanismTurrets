@@ -1,6 +1,5 @@
 # Mekanism Turrets
 
-![Mod Version](https://img.shields.io/badge/mod_version-1.3.1-blue)
 ![Minecraft Version](https://img.shields.io/badge/minecraft_version-1.21.1-green)
 ![CurseForge Downloads](https://cf.way2muchnoise.eu/full_1031448_downloads.svg)
 
