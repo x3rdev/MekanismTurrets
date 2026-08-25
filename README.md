@@ -1,6 +1,6 @@
 # Mekanism Turrets
 
-![Minecraft Version](https://img.shields.io/badge/Minecraft_Version-1.21.1-green)
+![Minecraft Version](https://img.shields.io/badge/Minecraft_Version-1.20.1-green)
 ![CurseForge Downloads](https://cf.way2muchnoise.eu/full_1031448_downloads.svg)
 
 Mekanism Turrets is an **addon mod** for [Mekanism](https://www.curseforge.com/minecraft/mc-mods/mekanism), enhancing your Minecraft base defenses with advanced turrets, fences, and security systems. This mod integrates seamlessly with Mekanism, providing additional layers of defense for your creations in the ever-dangerous world of Minecraft.
@@ -20,9 +20,10 @@ Stay tuned for new updates, features, and compatibility patches!
 
 ## Requirements
 
-- **Minecraft Version**: 1.21.1 and up.
-- **Mekanism Version**: 10.4.15 or later.
-- **NeoForge Version**: 47.3.1 or later.
+- **Minecraft Version**: 1.20.1.
+- **Mekanism Version**: 10.4.16 or later.
+- **Forge Version**: 47.3.1 or later.
+- **Geckolib Version** 4.8.3 or later.
 
 ---
 
