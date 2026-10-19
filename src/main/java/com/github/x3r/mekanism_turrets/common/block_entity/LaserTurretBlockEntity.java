@@ -27,6 +27,7 @@ import mekanism.common.util.UpgradeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -192,8 +193,12 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
         return targetPos;
     }
 
+    private boolean canLaserTick() {
+        return !isRemoved() && level instanceof ServerLevel serverLevel && serverLevel.isPositionEntityTicking(getBlockPos());
+    }
+
     private void shootLaser() {
-        if(target != null) { // Needed for scheduled shot
+        if(target != null && canLaserTick()) { // Needed for scheduled shot
             int mufflerCount = getComponent().getUpgrades(Upgrade.MUFFLING);
             float volume = 1.0F - (mufflerCount / (float) Upgrade.MUFFLING.getMax());
             level.playSound(null, getBlockPos(), SoundRegistry.TURRET_SHOOT.get(), SoundSource.BLOCKS, volume, 1.0F);
