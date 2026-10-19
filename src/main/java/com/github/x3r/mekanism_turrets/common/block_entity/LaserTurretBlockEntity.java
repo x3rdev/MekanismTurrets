@@ -198,7 +198,7 @@ public class LaserTurretBlockEntity extends TileEntityMekanism implements GeoBlo
     }
 
     private void shootLaser() {
-        if(target != null && canLaserTick()) { // Needed for scheduled shot
+        if(target != null && canLaserTick()) {
             int mufflerCount = getComponent().getUpgrades(Upgrade.MUFFLING);
             float volume = 1.0F - (mufflerCount / (float) Upgrade.MUFFLING.getMax());
             level.playSound(null, getBlockPos(), SoundRegistry.TURRET_SHOOT.get(), SoundSource.BLOCKS, volume, 1.0F);
